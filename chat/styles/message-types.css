@@ -1,0 +1,97 @@
+/* Additional styles for specific message types */
+.message-image-container {
+  position: relative;
+}
+
+.message-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+/* Audio message styling */
+.audio-player {
+  display: flex;
+  align-items: center;
+  width: 280px;
+  max-width: 100%;
+}
+
+.audio-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.audio-duration {
+  font-size: 11px;
+  color: var(--message-time);
+}
+
+/* Link button styling */
+.link-message {
+  display: flex;
+  flex-direction: column;
+}
+
+.link-preview {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #555;
+}
+
+/* Document message styling */
+.document-message {
+  display: flex;
+  align-items: center;
+  background: #f0f0f0;
+  border-radius: 5px;
+  padding: 8px 12px;
+  margin-top: 5px;
+}
+
+.document-icon {
+  font-size: 24px;
+  color: #5b7ae6;
+  margin-right: 10px;
+}
+
+.document-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.document-name {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.document-size {
+  font-size: 11px;
+  color: #767676;
+}
+
+/* Reply styling */
+.reply-message {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-left: 3px solid var(--whatsapp-light-green);
+  padding: 5px 8px;
+  margin-bottom: 5px;
+  border-radius: 3px;
+}
+
+.reply-sender {
+  font-weight: 500;
+  color: var(--whatsapp-green);
+  margin-bottom: 2px;
+  font-size: 12px;
+}
+
+.reply-content {
+  font-size: 12px;
+  color: #555;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

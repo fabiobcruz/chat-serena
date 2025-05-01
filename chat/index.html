@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="/vite.svg">
+  <title>WhatsApp Chat</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="chat-container">
+    <!-- Chat Header -->
+    <div class="chat-header">
+      <div class="contact-info">
+        <div class="back-button">
+          <i class="fas fa-arrow-left"></i>
+        </div>
+        <div class="contact-avatar">
+          <img src="assets/avatar.webp" alt="Contact Avatar">
+        </div>
+        <div class="contact-details">
+          <div class="contact-name">Master Serena</div>
+          <div class="contact-status">online</div>
+        </div>
+      </div>
+      <div class="header-buttons">
+        <!--
+        <i class="fas fa-video"></i>
+        <i class="fas fa-phone"></i>
+        <i class="fas fa-ellipsis-v"></i>
+        -->
+      </div>
+    </div>
+    
+    <!-- Chat Messages Area -->
+    <div class="chat-messages">
+      <!-- Messages will be added here dynamically -->
+    </div>
+    
+    <!-- Response Options Area -->
+    <div id="response-options" class="response-options"></div>
+  </div>
+
+  <!-- Import Scripts -->
+  <script src="scripts/messages.js"></script>
+  <script src="scripts/chat.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function getAllParams(url) {
+            const urlObj = new URL(url);
+            let paramString = "";
+
+            // Iterando sobre todos os parâmetros da URL
+            for (const [key, value] of urlObj.searchParams) {
+                paramString += `${paramString ? '&' : ''}${key}=${value}`;
+            }
+
+            return paramString;
+        }
+
+        const params = getAllParams(window.location.href);
+
+        if (params) {
+            const links = document.querySelectorAll("a");
+
+            links.forEach(link => {
+                const separator = link.href.includes("?") ? "&" : "?";
+                link.href += `${separator}${params}`;
+            });
+        }
+    });
+  </script>
+
+</body>
+</html>
