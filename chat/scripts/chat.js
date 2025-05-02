@@ -10,99 +10,8 @@ let currentMessageIndex = 0;
 let typingIndicator = null;
 let displayedMessages = [];
 let userMessages = [];
-const STORAGE_KEY = 'whatsapp_chat_data';
-
-// Load chat data from localStorage
-function loadChatData() {
-  const chatData = localStorage.getItem(STORAGE_KEY);
-  if (chatData) {
-    const parsedData = JSON.parse(chatData);
-    currentMessageIndex = parsedData.currentMessageIndex;
-    displayedMessages = parsedData.displayedMessages || [];
-    userMessages = parsedData.userMessages || [];
-    
-    // Restore displayed messages
-    if (displayedMessages.length > 0) {
-      displayedMessages.forEach(message => {
-        let messageEl;
-        switch (message.type) {
-          case 'text':
-            messageEl = createTextMessage(message.content, message.time, message.isHTML);
-            break;
-          case 'image':
-            messageEl = createImageMessage(message.content, message.caption, message.time);
-            break;
-          case 'audio':
-            messageEl = createAudioMessage(message.duration, message.time, message.audioSrc);
-            break;
-          case 'link':
-            messageEl = createLinkMessage(message.content, message.url, message.preview, message.time);
-            break;
-          default:
-            messageEl = createTextMessage(message.content, message.time);
-        }
-        chatMessages.appendChild(messageEl);
-      });
-    }
-    
-    // Restore user messages
-    if (userMessages.length > 0) {
-      userMessages.forEach(message => {
-        const messageEl = document.createElement('div');
-        messageEl.className = 'message sent';
-        
-        const messageContent = document.createElement('div');
-        messageContent.className = 'message-content';
-        
-        const messageText = document.createElement('div');
-        messageText.className = 'message-text';
-        messageText.textContent = message.content;
-        
-        const messageTimeContainer = document.createElement('div');
-        messageTimeContainer.className = 'message-time-container';
-        
-        const messageTime = document.createElement('span');
-        messageTime.className = 'message-time';
-        messageTime.textContent = message.time;
-        
-        // Criar o ícone de duplo check como um span vazio (sem o Font Awesome)
-        const doubleCheck = document.createElement('span');
-        doubleCheck.className = 'double-check';
-        
-        messageTimeContainer.appendChild(messageTime);
-        messageTimeContainer.appendChild(doubleCheck);
-        
-        messageContent.appendChild(messageText);
-        messageContent.appendChild(messageTimeContainer);
-        messageEl.appendChild(messageContent);
-        
-        chatMessages.appendChild(messageEl);
-      });
-    }
-    
-    // Show buttons if we've reached the end of the predefined messages
-    if (currentMessageIndex >= messageData.length) {
-      setTimeout(() => {
-        showResponseButtons(["¡Sí, quiero descubrir a mi alma gemela!"]);
-      }, 1000);
-    }
-    
-    // Scroll to bottom
-    setTimeout(() => {
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }, 100);
-  }
-}
-
-// Save chat data to localStorage
-function saveChatData() {
-  const chatData = {
-    currentMessageIndex,
-    displayedMessages,
-    userMessages
-  };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(chatData));
-}
+// Removendo a constante STORAGE_KEY pois não vamos mais usar localStorage
+// const STORAGE_KEY = 'whatsapp_chat_data';
 
 // Function to show typing indicator
 function showTypingIndicator() {
@@ -135,6 +44,14 @@ function showResponseButtons(options) {
   const existingButtons = document.querySelector('.response-buttons');
   if (existingButtons) {
     chatMessages.removeChild(existingButtons);
+  }
+  
+  // Verificar se já temos mensagens do usuário que indicam que passou dessa etapa
+  if (userMessages.length > 0 && options.includes("¡Sí, quiero descubrir a mi alma gemela!")) {
+    // Se já temos mensagens do usuário e estamos tentando mostrar o botão inicial,
+    // significa que já passamos dessa etapa e não devemos mostrar o botão novamente
+    console.log("Usuário já passou da etapa inicial, não mostrando botão de novo");
+    return;
   }
   
   // Criar a área de botões
@@ -194,8 +111,7 @@ function showResponseButtons(options) {
         time: currentTime
       });
       
-      // Salvar no localStorage
-      saveChatData();
+      // Removendo chamada ao saveChatData()
       
       // Rolar para baixo
       chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -212,8 +128,18 @@ function showResponseButtons(options) {
           
           // Criar e mostrar a próxima mensagem
           const nextMessageContent = "Antes de empezar, ¿podrías decirme <strong>tu nombre</strong>?";
-          const messageEl = createTextMessage(nextMessageContent, getCurrentTime(), true);
+          const nextTime = getCurrentTime();
+          const messageEl = createTextMessage(nextMessageContent, nextTime, true);
           chatMessages.appendChild(messageEl);
+          
+          // Adicionar ao array displayedMessages 
+          displayedMessages.push({
+            type: 'text',
+            content: nextMessageContent,
+            time: nextTime,
+            isHTML: true
+          });
+          // Removendo chamada ao saveChatData()
           
           // Rolar para baixo
           chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -240,10 +166,13 @@ function showResponseButtons(options) {
 function displayMessage(messageInfo) {
   // Check if we've already shown all messages
   if (currentMessageIndex >= messageData.length) {
-    // Se todas as mensagens foram exibidas, mostrar os botões de resposta em vez do input padrão
-    setTimeout(() => {
-      showResponseButtons(["¡Sí, quiero descubrir a mi alma gemela!"]);
-    }, 1000);
+    // Se todas as mensagens foram exibidas e não temos mensagens do usuário,
+    // mostrar o botão de resposta inicial apenas se não houver mensagens do usuário
+    if (userMessages.length === 0) {
+      setTimeout(() => {
+        showResponseButtons(["¡Sí, quiero descubrir a mi alma gemela!"]);
+      }, 1000);
+    }
     return;
   }
 
@@ -257,8 +186,8 @@ function displayMessage(messageInfo) {
       setTimeout(() => {
         displayMessage(messageData[currentMessageIndex]);
       }, 500); // Shorter delay for already displayed messages
-    } else {
-      // All messages displayed, show response buttons
+    } else if (userMessages.length === 0) {
+      // All messages displayed and no user messages yet, show response buttons
       setTimeout(() => {
         showResponseButtons(["¡Sí, quiero descubrir a mi alma gemela!"]);
       }, 1000);
@@ -290,8 +219,7 @@ function displayMessage(messageInfo) {
     chatMessages.appendChild(messageEl);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     
-    // Save to local storage
-    saveChatData();
+    // Removendo chamada ao saveChatData()
     
     // Display next message or show input if done
     currentMessageIndex++;
@@ -299,8 +227,8 @@ function displayMessage(messageInfo) {
       setTimeout(() => {
         displayMessage(messageData[currentMessageIndex]);
       }, messageInfo.delay || 2000);
-    } else {
-      // All messages displayed, show response buttons
+    } else if (userMessages.length === 0) {
+      // All messages displayed and no user messages yet, show response buttons
       setTimeout(() => {
         showResponseButtons(["¡Sí, quiero descubrir a mi alma gemela!"]);
       }, 1000);
@@ -376,8 +304,7 @@ function displayMessage(messageInfo) {
     chatMessages.appendChild(messageEl);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     
-    // Save to local storage
-    saveChatData();
+    // Removendo chamada ao saveChatData()
     
     // Display next message or show response buttons if done
     currentMessageIndex++;
@@ -385,8 +312,8 @@ function displayMessage(messageInfo) {
       setTimeout(() => {
         displayMessage(messageData[currentMessageIndex]);
       }, messageData[currentMessageIndex].delay);
-    } else {
-      // All messages displayed, show response buttons
+    } else if (userMessages.length === 0) {
+      // All messages displayed and no user messages yet, show response buttons
       setTimeout(() => {
         showResponseButtons(["¡Sí, quiero descubrir a mi alma gemela!"]);
       }, 1000);
@@ -401,36 +328,27 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('Current message index:', currentMessageIndex);
   console.log('Message data length:', messageData.length);
   
-  // Try to load existing chat data
-  loadChatData();
+  // Adicionando listener para os botões de áudio
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.play-button')) {
+      const playButton = e.target.closest('.play-button');
+      const progressBar = playButton.parentElement.querySelector('.audio-progress-filled');
+      handleAudioPlayback(playButton, progressBar);
+    }
+  });
   
-  // If no previous messages, start displaying messages after a short delay
-  if (displayedMessages.length === 0) {
-    console.log('No previous messages, starting new conversation');
+  // Removendo a chamada a loadChatData()
+  
+  // Iniciar exibindo a primeira mensagem
+  console.log('No previous messages, starting new conversation');
   setTimeout(() => {
     displayMessage(messageData[currentMessageIndex]);
   }, 1000);
-  } else {
-    console.log('Found previous messages:', displayedMessages.length);
-    // If we have previous messages but haven't displayed all of them yet,
-    // continue from where we left off
-    if (currentMessageIndex < messageData.length) {
-      console.log('Continuing from message index:', currentMessageIndex);
-  setTimeout(() => {
-        displayMessage(messageData[currentMessageIndex]);
-      }, 1000);
-    } else {
-      // Se todas as mensagens foram exibidas, mostrar os botões de resposta
-      console.log('All messages displayed, showing response buttons');
-    setTimeout(() => {
-        showResponseButtons(["¡Sí, quiero descubrir a mi alma gemela!"]);
-      }, 1000);
-    }
-  }
 });
 
 // Clear chat history - utility function for testing
 window.clearChatHistory = function() {
+  // Em caso de erro, limpar os dados corrompidos
   localStorage.removeItem(STORAGE_KEY);
   location.reload();
 };
@@ -463,24 +381,89 @@ function handleAudioPlayback(playButton, progressBar) {
     playButton.innerHTML = '<i class="fas fa-pause"></i>';
     
     // Reset progress if at the end
-    if (parseInt(progressBar.style.width || '0') >= 100) {
+    if (parseFloat(progressBar.style.width || '0') >= 100) {
       progressBar.style.width = '0%';
     }
     
-    // Simulate audio playback
-    let progress = parseInt(progressBar.style.width || '0');
-    const interval = setInterval(() => {
-      progress += 1;
-      progressBar.style.width = `${progress}%`;
+    // Buscar a duração do áudio em segundos
+    const audioMessage = playButton.closest('.audio-player');
+    const durationText = audioMessage ? audioMessage.querySelector('.audio-duration').textContent : '0:00';
+    
+    // Converter a duração (por exemplo, "0:23") para segundos
+    let totalSeconds = 0;
+    if (durationText) {
+      const parts = durationText.split(':');
+      if (parts.length === 2) {
+        totalSeconds = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+      }
+    }
+    
+    // Se não conseguir obter a duração, usar um valor padrão
+    if (totalSeconds <= 0) {
+      totalSeconds = 30; // Padrão de 30 segundos
+    }
+    
+    // Definir a duração total em milissegundos
+    const totalDuration = totalSeconds * 1000;
+    
+    // Definir intervalo de atualização fixo para uma animação suave
+    const updateInterval = 50; // 50ms = 20 atualizações por segundo
+    
+    // Obter o progresso atual como valor decimal entre 0 e 1
+    const currentWidth = progressBar.style.width || '0%';
+    let progress = parseFloat(currentWidth) / 100;
+    if (isNaN(progress)) progress = 0;
+    
+    // Calcular a quantidade de progresso a ser adicionada em cada atualização
+    // Esta é uma fração fixa do tempo total
+    const progressIncrement = updateInterval / totalDuration;
+    
+    // Armazenar o tempo de início para cálculos precisos
+    const startTime = Date.now();
+    const startProgress = progress;
+    
+    // Usar requestAnimationFrame para uma animação mais suave
+    let animationId;
+    const updateProgress = () => {
+      // Calcular o tempo decorrido desde o início
+      const elapsed = Date.now() - startTime;
       
-      if (progress >= 100) {
-        clearInterval(interval);
+      // Calcular o progresso com base no tempo decorrido
+      // Isso garante que a animação seja consistente independentemente de atrasos
+      const expectedProgress = startProgress + (elapsed / totalDuration);
+      
+      // Limitar o progresso a 100%
+      progress = Math.min(expectedProgress, 1);
+      
+      // Atualizar a largura da barra de progresso
+      progressBar.style.width = `${progress * 100}%`;
+      
+      // Verificar se a reprodução terminou
+      if (progress >= 1) {
+        cancelAnimationFrame(animationId);
         playButton.classList.remove('playing');
         playButton.innerHTML = '<i class="fas fa-play"></i>';
+        progressBar.style.width = '100%';
+      } else {
+        // Continuar a animação
+        animationId = requestAnimationFrame(updateProgress);
       }
-    }, 300);
+    };
     
-    playButton.dataset.intervalId = interval;
+    // Iniciar a animação
+    animationId = requestAnimationFrame(updateProgress);
+    
+    // Armazenar o ID da animação para poder cancelá-la depois
+    playButton.dataset.animationId = animationId;
+    
+    // Substituir o handler para o evento de clique no botão de pausa
+    const originalClickHandler = playButton.onclick;
+    playButton.onclick = function() {
+      if (playButton.classList.contains('playing')) {
+        cancelAnimationFrame(playButton.dataset.animationId);
+      }
+      if (originalClickHandler) originalClickHandler();
+    };
   }
 }
 
@@ -664,9 +647,6 @@ function sendNameResponse(name) {
     time: currentTime
   });
   
-  // Salvar no localStorage
-  saveChatData();
-  
   // Rolar para baixo
   chatMessages.scrollTop = chatMessages.scrollHeight;
   
@@ -685,8 +665,18 @@ function sendNameResponse(name) {
       
       // Criar e mostrar a próxima mensagem, substituindo {{NOME}} pelo nome do usuário
       const nextMessageContent = `Es un placer hablar contigo, <strong>${userName}</strong>. ¡Tengo muchísimas ganas de empezar a crear tu dibujo!`;
-      const messageEl = createTextMessage(nextMessageContent, getCurrentTime(), true);
+      const currentTime = getCurrentTime();
+      const messageEl = createTextMessage(nextMessageContent, currentTime, true);
       chatMessages.appendChild(messageEl);
+      
+      // Adicionar ao array displayedMessages 
+      displayedMessages.push({
+        type: 'text',
+        content: nextMessageContent,
+        time: currentTime,
+        isHTML: true
+      });
+      // Removendo chamada ao saveChatData()
       
       // Rolar para baixo
       chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -703,8 +693,18 @@ function sendNameResponse(name) {
           
           // Criar e mostrar a próxima mensagem
           const message1Content = "Tengo el presentimiento de que esta persona llegará a tu vida en los <strong>próximos días</strong> ❤️‍🔥";
-          const message1El = createTextMessage(message1Content, getCurrentTime(), true);
+          const currentTime1 = getCurrentTime();
+          const message1El = createTextMessage(message1Content, currentTime1, true);
           chatMessages.appendChild(message1El);
+          
+          // Adicionar ao array displayedMessages 
+          displayedMessages.push({
+            type: 'text',
+            content: message1Content,
+            time: currentTime1,
+            isHTML: true
+          });
+          // Removendo chamada ao saveChatData()
           
           // Rolar para baixo
           chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -721,8 +721,18 @@ function sendNameResponse(name) {
               
               // Criar e mostrar a próxima mensagem
               const message2Content = "Pero antes de continuar, déjame explicarte cómo funciona el procedimiento para que podamos comenzar con tu dibujo.";
-              const message2El = createTextMessage(message2Content, getCurrentTime(), false);
+              const currentTime2 = getCurrentTime();
+              const message2El = createTextMessage(message2Content, currentTime2, false);
               chatMessages.appendChild(message2El);
+              
+              // Adicionar ao array displayedMessages 
+              displayedMessages.push({
+                type: 'text',
+                content: message2Content,
+                time: currentTime2,
+                isHTML: false
+              });
+              // Removendo chamada ao saveChatData()
               
               // Rolar para baixo
               chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -738,8 +748,18 @@ function sendNameResponse(name) {
                   hideTypingIndicator();
                   
                   // Criar e mostrar a mensagem de áudio
-                  const audioEl = createAudioMessage("0:17", getCurrentTime(), "assets/1.mp3");
+                  const currentTime3 = getCurrentTime();
+                  const audioEl = createAudioMessage("0:17", currentTime3, "assets/1.mp3");
                   chatMessages.appendChild(audioEl);
+                  
+                  // Adicionar ao array displayedMessages 
+                  displayedMessages.push({
+                    type: 'audio',
+                    duration: "0:17",
+                    audioSrc: "assets/1.mp3",
+                    time: currentTime3
+                  });
+                  // Removendo chamada ao saveChatData()
                   
                   // Rolar para baixo
                   chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -764,8 +784,18 @@ function sendNameResponse(name) {
                         
                         // Criar e mostrar a próxima mensagem
                         const nextMessageContent = "<strong>¿Puedo empezar con las preguntas?</strong> Recuerda no cruzar las piernas ni los brazos…";
-                        const messageEl = createTextMessage(nextMessageContent, getCurrentTime(), true);
+                        const currentTime4 = getCurrentTime();
+                        const messageEl = createTextMessage(nextMessageContent, currentTime4, true);
                         chatMessages.appendChild(messageEl);
+                        
+                        // Adicionar ao array displayedMessages 
+                        displayedMessages.push({
+                          type: 'text',
+                          content: nextMessageContent,
+                          time: currentTime4,
+                          isHTML: true
+                        });
+                        // Removendo chamada ao saveChatData()
                         
                         // Rolar para baixo
                         chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -850,9 +880,6 @@ function processAudioResponse(responseText) {
     time: currentTime
   });
   
-  // Salvar no localStorage
-  saveChatData();
-  
   // Rolar para baixo
   chatMessages.scrollTop = chatMessages.scrollHeight;
   
@@ -868,8 +895,18 @@ function processAudioResponse(responseText) {
       
       // Mostrar a mensagem em espanhol sobre o signo
       const nextMessageContent = "¿Cuál es tu signo?";
-      const messageEl = createTextMessage(nextMessageContent, getCurrentTime(), false);
+      const currentTime = getCurrentTime();
+      const messageEl = createTextMessage(nextMessageContent, currentTime, false);
       chatMessages.appendChild(messageEl);
+      
+      // Adicionar ao array displayedMessages 
+      displayedMessages.push({
+        type: 'text',
+        content: nextMessageContent,
+        time: currentTime,
+        isHTML: false
+      });
+      // Removendo chamada ao saveChatData()
       
       // Rolar para baixo
       chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -880,6 +917,54 @@ function processAudioResponse(responseText) {
       }, 500);
     }, 2000); // 2 segundos para simular a digitação
   }, 1000); // 1 segundo após a resposta do usuário (delay normal)
+}
+
+// Cria uma função helper para facilitar a criação e salvamento de mensagens
+function createAndSaveMessage(content, isHTML = false, type = 'text', extraParams = {}) {
+  const currentTime = getCurrentTime();
+  let messageEl;
+  let messageData = {
+    type: type,
+    time: currentTime,
+    ...extraParams
+  };
+  
+  // Cria a mensagem de acordo com o tipo
+  switch (type) {
+    case 'text':
+      messageEl = createTextMessage(content, currentTime, isHTML);
+      messageData.content = content;
+      messageData.isHTML = isHTML;
+      break;
+    case 'image':
+      messageEl = createImageMessage(content, extraParams.caption, currentTime);
+      messageData.content = content;
+      messageData.caption = extraParams.caption;
+      break;
+    case 'audio':
+      messageEl = createAudioMessage(extraParams.duration, currentTime, content);
+      messageData.audioSrc = content;
+      messageData.duration = extraParams.duration;
+      break;
+    case 'link':
+      messageEl = createLinkMessage(content, extraParams.url, extraParams.preview, currentTime);
+      messageData.content = content;
+      messageData.url = extraParams.url;
+      messageData.preview = extraParams.preview;
+      break;
+  }
+  
+  // Adiciona a mensagem ao chat
+  chatMessages.appendChild(messageEl);
+  
+  // Adiciona ao array displayedMessages e salva no localStorage
+  displayedMessages.push(messageData);
+  saveChatData();
+  
+  // Rola para baixo
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  
+  return messageEl;
 }
 
 // Função para criar um campo de entrada para o signo
@@ -988,14 +1073,8 @@ function sendSignResponse(sign) {
     time: currentTime
   });
   
-  // Salvar no localStorage
-  saveChatData();
-  
   // Rolar para baixo
   chatMessages.scrollTop = chatMessages.scrollHeight;
-  
-  // Armazenar o signo para uso futuro
-  const userSign = signText;
   
   // Encontrar o nome do usuário (corrigindo a lógica para obter o nome correto)
   let userName = ""; // Valor padrão caso não encontre
@@ -1006,6 +1085,14 @@ function sendSignResponse(sign) {
   if (userMessages.length > 1) {
     userName = userMessages[1].content;
   }
+  
+  // Armazenar o índice onde o signo foi salvo para uso futuro
+  const signIndex = userMessages.length - 1;
+  // Armazenar o signo diretamente em uma variável global para facilitar acesso
+  window.userSignData = {
+    content: signText,
+    index: signIndex
+  };
   
   // Exibir a próxima mensagem mencionando o nome e o signo
   setTimeout(() => {
@@ -1018,9 +1105,19 @@ function sendSignResponse(sign) {
       hideTypingIndicator();
       
       // Criar e mostrar a mensagem personalizada com nome e signo
-      const nextMessageContent = `Qué casualidad, <strong>${userName}</strong>, yo también soy <strong>${userSign}</strong>.`;
-      const messageEl = createTextMessage(nextMessageContent, getCurrentTime(), true);
+      const nextMessageContent = `Qué casualidad, <strong>${userName}</strong>, yo también soy <strong>${signText}</strong>.`;
+      const currentTime = getCurrentTime();
+      const messageEl = createTextMessage(nextMessageContent, currentTime, true);
       chatMessages.appendChild(messageEl);
+      
+      // Adicionar ao array displayedMessages 
+      displayedMessages.push({
+        type: 'text',
+        content: nextMessageContent,
+        time: currentTime,
+        isHTML: true
+      });
+      // Removendo chamada ao saveChatData()
       
       // Rolar para baixo
       chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -1037,8 +1134,18 @@ function sendSignResponse(sign) {
           
           // Criar e mostrar a próxima mensagem
           const birthdateMessageContent = "¿Cual es tu fecha de nacimiento?";
-          const birthdateMessageEl = createTextMessage(birthdateMessageContent, getCurrentTime(), false);
+          const currentTime2 = getCurrentTime();
+          const birthdateMessageEl = createTextMessage(birthdateMessageContent, currentTime2, false);
           chatMessages.appendChild(birthdateMessageEl);
+          
+          // Adicionar ao array displayedMessages 
+          displayedMessages.push({
+            type: 'text',
+            content: birthdateMessageContent,
+            time: currentTime2,
+            isHTML: false
+          });
+          // Removendo chamada ao saveChatData()
           
           // Rolar para baixo
           chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -1159,9 +1266,6 @@ function sendBirthdateResponse(birthdate) {
     time: currentTime
   });
   
-  // Salvar no localStorage
-  saveChatData();
-  
   // Rolar para baixo
   chatMessages.scrollTop = chatMessages.scrollHeight;
   
@@ -1177,8 +1281,18 @@ function sendBirthdateResponse(birthdate) {
       
       // Criar e mostrar a próxima mensagem
       const birthtimeMessageContent = "¿A qué hora naciste? Si no sabes la hora exacta, no te preocupes.";
-      const birthtimeMessageEl = createTextMessage(birthtimeMessageContent, getCurrentTime(), false);
+      const currentTime = getCurrentTime();
+      const birthtimeMessageEl = createTextMessage(birthtimeMessageContent, currentTime, false);
       chatMessages.appendChild(birthtimeMessageEl);
+      
+      // Adicionar ao array displayedMessages 
+      displayedMessages.push({
+        type: 'text',
+        content: birthtimeMessageContent,
+        time: currentTime,
+        isHTML: false
+      });
+      // Removendo chamada ao saveChatData()
       
       // Rolar para baixo
       chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -1297,9 +1411,6 @@ function sendBirthtimeResponse(birthtime) {
     time: currentTime
   });
   
-  // Salvar no localStorage
-  saveChatData();
-  
   // Rolar para baixo
   chatMessages.scrollTop = chatMessages.scrollHeight;
   
@@ -1315,8 +1426,18 @@ function sendBirthtimeResponse(birthtime) {
       
       // Criar e mostrar a mensagem final
       const loveLifeMessageContent = "Y por último ¿Cómo va tu vida amorosa?";
-      const loveLifeMessageEl = createTextMessage(loveLifeMessageContent, getCurrentTime(), false);
+      const currentTime = getCurrentTime();
+      const loveLifeMessageEl = createTextMessage(loveLifeMessageContent, currentTime, false);
       chatMessages.appendChild(loveLifeMessageEl);
+      
+      // Adicionar ao array displayedMessages 
+      displayedMessages.push({
+        type: 'text',
+        content: loveLifeMessageContent,
+        time: currentTime,
+        isHTML: false
+      });
+      // Removendo chamada ao saveChatData()
       
       // Rolar para baixo
       chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -1421,9 +1542,6 @@ function processLoveLifeResponse(response) {
         time: currentTime
     });
     
-    // Salvar no localStorage
-    saveChatData();
-    
     // Rolar para baixo
     chatMessages.scrollTop = chatMessages.scrollHeight;
     
@@ -1435,8 +1553,18 @@ function processLoveLifeResponse(response) {
         setTimeout(() => {
             hideTypingIndicator();
             const botResponse = "Me alegra saber que te va bien en la vida.";
-            const messageEl = createTextMessage(botResponse, getCurrentTime(), false);
+            const currentTime = getCurrentTime();
+            const messageEl = createTextMessage(botResponse, currentTime, false);
             chatMessages.appendChild(messageEl);
+            
+            // Adicionar ao array displayedMessages 
+            displayedMessages.push({
+              type: 'text',
+              content: botResponse,
+              time: currentTime,
+              isHTML: false
+            });
+            // Removendo chamada ao saveChatData()
             
             // Segunda mensagem
             setTimeout(() => {
@@ -1445,8 +1573,18 @@ function processLoveLifeResponse(response) {
                 setTimeout(() => {
                     hideTypingIndicator();
                     const botResponse2 = "Generalmente, las personas que buscan pareja suelen tener suerte en sus relaciones, y tú pareces ser una de ellas.";
-                    const messageEl2 = createTextMessage(botResponse2, getCurrentTime(), false);
+                    const currentTime2 = getCurrentTime();
+                    const messageEl2 = createTextMessage(botResponse2, currentTime2, false);
                     chatMessages.appendChild(messageEl2);
+                    
+                    // Adicionar ao array displayedMessages 
+                    displayedMessages.push({
+                      type: 'text',
+                      content: botResponse2,
+                      time: currentTime2,
+                      isHTML: false
+                    });
+                    // Removendo chamada ao saveChatData()
                     
                     // Áudio mensagem
                     setTimeout(() => {
@@ -1454,8 +1592,18 @@ function processLoveLifeResponse(response) {
                         
                         setTimeout(() => {
                             hideTypingIndicator();
-                            const audioEl = createAudioMessage("0:15", getCurrentTime(), "assets/2.mp3");
+                            const currentTime3 = getCurrentTime();
+                            const audioEl = createAudioMessage("0:15", currentTime3, "assets/2.mp3");
                             chatMessages.appendChild(audioEl);
+                            
+                            // Adicionar ao array displayedMessages 
+                            displayedMessages.push({
+                              type: 'audio',
+                              duration: "0:15",
+                              audioSrc: "assets/2.mp3",
+                              time: currentTime3
+                            });
+                            // Removendo chamada ao saveChatData()
                             
                             // Reproduzir o áudio automaticamente após um pequeno delay
                             setTimeout(() => {
@@ -1472,8 +1620,18 @@ function processLoveLifeResponse(response) {
                                     setTimeout(() => {
                                         hideTypingIndicator();
                                         const botResponse3 = "Voy a enviarles las historias de algunas mujeres que recibieron un dibujo idéntico al de sus parejas...";
-                                        const messageEl3 = createTextMessage(botResponse3, getCurrentTime(), false);
+                                        const currentTime4 = getCurrentTime();
+                                        const messageEl3 = createTextMessage(botResponse3, currentTime4, false);
                                         chatMessages.appendChild(messageEl3);
+                                        
+                                        // Adicionar ao array displayedMessages 
+                                        displayedMessages.push({
+                                          type: 'text',
+                                          content: botResponse3,
+                                          time: currentTime4,
+                                          isHTML: false
+                                        });
+                                        // Removendo chamada ao saveChatData()
                                         
                                         // Primeira imagem com texto explicativo
                                         setTimeout(() => {
@@ -1481,8 +1639,18 @@ function processLoveLifeResponse(response) {
                                             
                                             setTimeout(() => {
                                                 hideTypingIndicator();
-                                                const imageEl1 = createImageMessage("assets/img-1.png", null, getCurrentTime());
+                                                const currentTime5 = getCurrentTime();
+                                                const imageEl1 = createImageMessage("assets/img-1.png", null, currentTime5);
                                                 chatMessages.appendChild(imageEl1);
+                                                
+                                                // Adicionar ao array displayedMessages 
+                                                displayedMessages.push({
+                                                  type: 'image',
+                                                  content: "assets/img-1.png",
+                                                  caption: null,
+                                                  time: currentTime5
+                                                });
+                                                // Removendo chamada ao saveChatData()
                                                 
                                                 setTimeout(() => {
                                                     showTypingIndicator();
@@ -1490,8 +1658,18 @@ function processLoveLifeResponse(response) {
                                                     setTimeout(() => {
                                                         hideTypingIndicator();
                                                         const imageText1 = "¡Esta es Mayara, ella adquirió nuestra oferta adicional que revela el nombre y características de la persona del dibujo!";
-                                                        const textMessageEl1 = createTextMessage(imageText1, getCurrentTime(), false);
+                                                        const currentTime6 = getCurrentTime();
+                                                        const textMessageEl1 = createTextMessage(imageText1, currentTime6, false);
                                                         chatMessages.appendChild(textMessageEl1);
+                                                        
+                                                        // Adicionar ao array displayedMessages 
+                                                        displayedMessages.push({
+                                                          type: 'text',
+                                                          content: imageText1,
+                                                          time: currentTime6,
+                                                          isHTML: false
+                                                        });
+                                                        // Removendo chamada ao saveChatData()
                                                         
                                                         // Segunda imagem com texto explicativo
                                                         setTimeout(() => {
@@ -1499,8 +1677,18 @@ function processLoveLifeResponse(response) {
                                                             
                                                             setTimeout(() => {
                                                                 hideTypingIndicator();
-                                                                const imageEl2 = createImageMessage("assets/img-2.webp", null, getCurrentTime());
+                                                                const currentTime7 = getCurrentTime();
+                                                                const imageEl2 = createImageMessage("assets/img-2.webp", null, currentTime7);
                                                                 chatMessages.appendChild(imageEl2);
+                                                                
+                                                                // Adicionar ao array displayedMessages 
+                                                                displayedMessages.push({
+                                                                  type: 'image',
+                                                                  content: "assets/img-2.webp",
+                                                                  caption: null,
+                                                                  time: currentTime7
+                                                                });
+                                                                // Removendo chamada ao saveChatData()
                                                                 
                                                                 setTimeout(() => {
                                                                     showTypingIndicator();
@@ -1508,8 +1696,18 @@ function processLoveLifeResponse(response) {
                                                                     setTimeout(() => {
                                                                         hideTypingIndicator();
                                                                         const imageText2 = "Esta es Olivia. ¡En menos de un mes, ya encontró a la persona del dibujo!";
-                                                                        const textMessageEl2 = createTextMessage(imageText2, getCurrentTime(), false);
+                                                                        const currentTime8 = getCurrentTime();
+                                                                        const textMessageEl2 = createTextMessage(imageText2, currentTime8, false);
                                                                         chatMessages.appendChild(textMessageEl2);
+                                                                        
+                                                                        // Adicionar ao array displayedMessages 
+                                                                        displayedMessages.push({
+                                                                          type: 'text',
+                                                                          content: imageText2,
+                                                                          time: currentTime8,
+                                                                          isHTML: false
+                                                                        });
+                                                                        // Removendo chamada ao saveChatData()
                                                                         
                                                                         // Pergunta final com o nome do usuário
                                                                         setTimeout(() => {
@@ -1520,8 +1718,18 @@ function processLoveLifeResponse(response) {
                                                                                 // Obter o nome do userMessages[1] (segunda mensagem)
                                                                                 const userName = userMessages.length > 1 ? userMessages[1].content : '';
                                                                                 const finalQuestion = `¿No es increíble, <strong>${userName}</strong>? ¿Te gustaría ver también las características de tu alma gemela?`;
-                                                                                const finalMessageEl = createTextMessage(finalQuestion, getCurrentTime(), true);
+                                                                                const currentTime9 = getCurrentTime();
+                                                                                const finalMessageEl = createTextMessage(finalQuestion, currentTime9, true);
                                                                                 chatMessages.appendChild(finalMessageEl);
+                                                                                
+                                                                                // Adicionar ao array displayedMessages 
+                                                                                displayedMessages.push({
+                                                                                  type: 'text',
+                                                                                  content: finalQuestion,
+                                                                                  time: currentTime9,
+                                                                                  isHTML: true
+                                                                                });
+                                                                                // Removendo chamada ao saveChatData()
                                                                                 
                                                                                 // Botões de resposta
                                                                                 setTimeout(() => {
@@ -1632,9 +1840,6 @@ function processDrawingResponse(response) {
         time: currentTime
     });
     
-    // Salvar no localStorage
-    saveChatData();
-    
     // Rolar para baixo
     chatMessages.scrollTop = chatMessages.scrollHeight;
     
@@ -1645,8 +1850,18 @@ function processDrawingResponse(response) {
         setTimeout(() => {
             hideTypingIndicator();
             let botResponse = "Perfecto! Procesaré tu solicitud ahora mismo...";
-            const messageEl = createTextMessage(botResponse, getCurrentTime(), false);
+            const currentTime1 = getCurrentTime();
+            const messageEl = createTextMessage(botResponse, currentTime1, false);
             chatMessages.appendChild(messageEl);
+            
+            // Adicionar ao array displayedMessages 
+            displayedMessages.push({
+                type: 'text',
+                content: botResponse,
+                time: currentTime1,
+                isHTML: false
+            });
+            // Removendo chamada ao saveChatData()
             
             // Segunda mensagem perguntando se pode começar o desenho
             setTimeout(() => {
@@ -1657,8 +1872,19 @@ function processDrawingResponse(response) {
                     // Obter o nome do usuário (segunda mensagem)
                     const userName = userMessages.length > 1 ? userMessages[1].content : '';
                     const drawMessage = `Perfecto, <strong>${userName}</strong>. ¿Puedo empezar a crear tu dibujo?`;
-                    const drawMessageEl = createTextMessage(drawMessage, getCurrentTime(), true);
+                    const currentTime2 = getCurrentTime();
+                    const drawMessageEl = createTextMessage(drawMessage, currentTime2, true);
                     chatMessages.appendChild(drawMessageEl);
+                    
+                    // Adicionar ao array displayedMessages 
+                    displayedMessages.push({
+                        type: 'text',
+                        content: drawMessage,
+                        time: currentTime2,
+                        isHTML: true
+                    });
+                    // Removendo chamada ao saveChatData()
+                    
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                     
                     // Mostrar campo de entrada que não armazena informação
@@ -1783,8 +2009,19 @@ function processConfirmDrawingResponse(response) {
             // Obter o nome do usuário (segunda mensagem)
             const userName = userMessages.length > 1 ? userMessages[1].content : '';
             const nameMessage = `<strong>${userName}</strong>`;
-            const nameMessageEl = createTextMessage(nameMessage, getCurrentTime(), true);
+            const currentTime = getCurrentTime();
+            const nameMessageEl = createTextMessage(nameMessage, currentTime, true);
             chatMessages.appendChild(nameMessageEl);
+            
+            // Adicionar ao array displayedMessages 
+            displayedMessages.push({
+                type: 'text',
+                content: nameMessage,
+                time: currentTime,
+                isHTML: true
+            });
+            // Removendo chamada ao saveChatData()
+            
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
             // Mostrar o signo do usuário (corrigido para pegar a terceira mensagem)
@@ -1793,12 +2030,22 @@ function processConfirmDrawingResponse(response) {
                 
                 setTimeout(() => {
                     hideTypingIndicator();
-                    // Obter o signo do usuário (terceira mensagem)
-                    // Corrigido para usar userMessages[3] que é a mensagem do signo
-                    const userSign = userMessages.length > 3 ? userMessages[3].content : '';
+                    // Obter o signo correto do usuário usando a variável armazenada anteriormente
+                    const userSign = window.userSignData ? window.userSignData.content : 'Desconhecido';
                     const signMessage = `<strong>${userSign}</strong>`;
-                    const signMessageEl = createTextMessage(signMessage, getCurrentTime(), true);
+                    const currentTime2 = getCurrentTime();
+                    const signMessageEl = createTextMessage(signMessage, currentTime2, true);
                     chatMessages.appendChild(signMessageEl);
+                    
+                    // Adicionar ao array displayedMessages 
+                    displayedMessages.push({
+                        type: 'text',
+                        content: signMessage,
+                        time: currentTime2,
+                        isHTML: true
+                    });
+                    // Removendo chamada ao saveChatData()
+                    
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                     
                     // Mostrar a hora do usuário
@@ -1810,8 +2057,19 @@ function processConfirmDrawingResponse(response) {
                             // Obter a hora do usuário (quinta mensagem)
                             const userTime = userMessages.length > 4 ? userMessages[4].content : '';
                             const timeMessage = `<strong>${userTime}</strong>`;
-                            const timeMessageEl = createTextMessage(timeMessage, getCurrentTime(), true);
+                            const currentTime3 = getCurrentTime();
+                            const timeMessageEl = createTextMessage(timeMessage, currentTime3, true);
                             chatMessages.appendChild(timeMessageEl);
+                            
+                            // Adicionar ao array displayedMessages 
+                            displayedMessages.push({
+                                type: 'text',
+                                content: timeMessage,
+                                time: currentTime3,
+                                isHTML: true
+                            });
+                            // Removendo chamada ao saveChatData()
+                            
                             chatMessages.scrollTop = chatMessages.scrollHeight;
                             
                             // Mensagem sobre consulta da carta astral
@@ -1821,8 +2079,19 @@ function processConfirmDrawingResponse(response) {
                                 setTimeout(() => {
                                     hideTypingIndicator();
                                     const astralMessage = "Estoy consultando tu carta astral. Por favor, no cruces los brazos ni las piernas. ¡Estoy visualizando información muy importante sobre tu alma gemela!";
-                                    const astralMessageEl = createTextMessage(astralMessage, getCurrentTime(), false);
+                                    const currentTime4 = getCurrentTime();
+                                    const astralMessageEl = createTextMessage(astralMessage, currentTime4, false);
                                     chatMessages.appendChild(astralMessageEl);
+                                    
+                                    // Adicionar ao array displayedMessages 
+                                    displayedMessages.push({
+                                        type: 'text',
+                                        content: astralMessage,
+                                        time: currentTime4,
+                                        isHTML: false
+                                    });
+                                    // Removendo chamada ao saveChatData()
+                                    
                                     chatMessages.scrollTop = chatMessages.scrollHeight;
                                     
                                     // Mensagem final sobre análise da carta (com delay maior)
@@ -1832,8 +2101,19 @@ function processConfirmDrawingResponse(response) {
                                         setTimeout(() => {
                                             hideTypingIndicator();
                                             const finalAnalysisMessage = "Analizaré tu Carta profundamente y con mi Don me concentraré para dibujar el rostro que estoy visualizando.";
-                                            const finalAnalysisMessageEl = createTextMessage(finalAnalysisMessage, getCurrentTime(), false);
+                                            const currentTime5 = getCurrentTime();
+                                            const finalAnalysisMessageEl = createTextMessage(finalAnalysisMessage, currentTime5, false);
                                             chatMessages.appendChild(finalAnalysisMessageEl);
+                                            
+                                            // Adicionar ao array displayedMessages 
+                                            displayedMessages.push({
+                                                type: 'text',
+                                                content: finalAnalysisMessage,
+                                                time: currentTime5,
+                                                isHTML: false
+                                            });
+                                            // Removendo chamada ao saveChatData()
+                                            
                                             chatMessages.scrollTop = chatMessages.scrollHeight;
                                             
                                             // Primeira mensagem de áudio (3.mp3)
@@ -1842,8 +2122,19 @@ function processConfirmDrawingResponse(response) {
                                                 
                                                 setTimeout(() => {
                                                     hideTypingIndicator();
-                                                    const audioEl1 = createAudioMessage("0:16", getCurrentTime(), "assets/3.mp3");
+                                                    const currentTime6 = getCurrentTime();
+                                                    const audioEl1 = createAudioMessage("0:16", currentTime6, "assets/3.mp3");
                                                     chatMessages.appendChild(audioEl1);
+                                                    
+                                                    // Adicionar ao array displayedMessages 
+                                                    displayedMessages.push({
+                                                        type: 'audio',
+                                                        duration: "0:16",
+                                                        audioSrc: "assets/3.mp3",
+                                                        time: currentTime6
+                                                    });
+                                                    // Removendo chamada ao saveChatData()
+                                                    
                                                     chatMessages.scrollTop = chatMessages.scrollHeight;
                                                     
                                                     // Reproduzir o áudio automaticamente após um pequeno delay
@@ -1860,8 +2151,19 @@ function processConfirmDrawingResponse(response) {
                                                             
                                                             setTimeout(() => {
                                                                 hideTypingIndicator();
-                                                                const audioEl2 = createAudioMessage("0:11", getCurrentTime(), "assets/4.mp3");
+                                                                const currentTime7 = getCurrentTime();
+                                                                const audioEl2 = createAudioMessage("0:11", currentTime7, "assets/4.mp3");
                                                                 chatMessages.appendChild(audioEl2);
+                                                                
+                                                                // Adicionar ao array displayedMessages 
+                                                                displayedMessages.push({
+                                                                    type: 'audio',
+                                                                    duration: "0:11",
+                                                                    audioSrc: "assets/4.mp3",
+                                                                    time: currentTime7
+                                                                });
+                                                                // Removendo chamada ao saveChatData()
+                                                                
                                                                 chatMessages.scrollTop = chatMessages.scrollHeight;
                                                                 
                                                                 // Reproduzir o segundo áudio automaticamente após um pequeno delay
@@ -1879,8 +2181,19 @@ function processConfirmDrawingResponse(response) {
                                                                         setTimeout(() => {
                                                                             hideTypingIndicator();
                                                                             const confirmMessage = "Para enviarte el dibujo en cuanto lo termine, solo necesito tu confirmación. ¡Haz clic en el botón de abajo para confirmar!";
-                                                                            const confirmMessageEl = createTextMessage(confirmMessage, getCurrentTime(), false);
+                                                                            const currentTime8 = getCurrentTime();
+                                                                            const confirmMessageEl = createTextMessage(confirmMessage, currentTime8, false);
                                                                             chatMessages.appendChild(confirmMessageEl);
+                                                                            
+                                                                            // Adicionar ao array displayedMessages 
+                                                                            displayedMessages.push({
+                                                                                type: 'text',
+                                                                                content: confirmMessage,
+                                                                                time: currentTime8,
+                                                                                isHTML: false
+                                                                            });
+                                                                            // Removendo chamada ao saveChatData()
+                                                                            
                                                                             chatMessages.scrollTop = chatMessages.scrollHeight;
                                                                             
                                                                             // Mostrar botão de confirmação
@@ -1990,9 +2303,6 @@ function processFinalConfirmation(response) {
         time: currentTime
     });
     
-    // Salvar no localStorage
-    saveChatData();
-    
     // Rolar para baixo
     chatMessages.scrollTop = chatMessages.scrollHeight;
     
@@ -2003,8 +2313,19 @@ function processFinalConfirmation(response) {
         setTimeout(() => {
             hideTypingIndicator();
             const finalResponse = "¡Perfecto! Ya estoy trabajando en tu dibujo. Te avisaré cuando esté listo.";
-            const finalResponseEl = createTextMessage(finalResponse, getCurrentTime(), false);
+            const currentTime1 = getCurrentTime();
+            const finalResponseEl = createTextMessage(finalResponse, currentTime1, false);
             chatMessages.appendChild(finalResponseEl);
+            
+            // Adicionar ao array displayedMessages 
+            displayedMessages.push({
+                type: 'text',
+                content: finalResponse,
+                time: currentTime1,
+                isHTML: false
+            });
+            // Removendo chamada ao saveChatData()
+            
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
             // Primeira mensagem sobre momento especial
@@ -2014,8 +2335,19 @@ function processFinalConfirmation(response) {
                 setTimeout(() => {
                     hideTypingIndicator();
                     const specialMomentMessage = "¡Estás a punto de vivir un momento especial! Pero ahora, presta mucha atención, querida...";
-                    const specialMomentEl = createTextMessage(specialMomentMessage, getCurrentTime(), false);
+                    const currentTime2 = getCurrentTime();
+                    const specialMomentEl = createTextMessage(specialMomentMessage, currentTime2, false);
                     chatMessages.appendChild(specialMomentEl);
+                    
+                    // Adicionar ao array displayedMessages 
+                    displayedMessages.push({
+                        type: 'text',
+                        content: specialMomentMessage,
+                        time: currentTime2,
+                        isHTML: false
+                    });
+                    // Removendo chamada ao saveChatData()
+                    
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                     
                     // Segunda mensagem sobre não cobrar pela consulta
@@ -2025,8 +2357,19 @@ function processFinalConfirmation(response) {
                         setTimeout(() => {
                             hideTypingIndicator();
                             const freeConsultMessage = "No cobro nada por la consulta.";
-                            const freeConsultEl = createTextMessage(freeConsultMessage, getCurrentTime(), false);
+                            const currentTime3 = getCurrentTime();
+                            const freeConsultEl = createTextMessage(freeConsultMessage, currentTime3, false);
                             chatMessages.appendChild(freeConsultEl);
+                            
+                            // Adicionar ao array displayedMessages 
+                            displayedMessages.push({
+                                type: 'text',
+                                content: freeConsultMessage,
+                                time: currentTime3,
+                                isHTML: false
+                            });
+                            // Removendo chamada ao saveChatData()
+                            
                             chatMessages.scrollTop = chatMessages.scrollHeight;
                             
                             // Primeiro áudio (5.mp3 em vez de 6.mp3)
@@ -2035,8 +2378,19 @@ function processFinalConfirmation(response) {
                                 
                                 setTimeout(() => {
                                     hideTypingIndicator();
-                                    const audioEl1 = createAudioMessage("0:19", getCurrentTime(), "assets/5.mp3");
+                                    const currentTime4 = getCurrentTime();
+                                    const audioEl1 = createAudioMessage("0:19", currentTime4, "assets/5.mp3");
                                     chatMessages.appendChild(audioEl1);
+                                    
+                                    // Adicionar ao array displayedMessages 
+                                    displayedMessages.push({
+                                        type: 'audio',
+                                        duration: "0:19",
+                                        audioSrc: "assets/5.mp3",
+                                        time: currentTime4
+                                    });
+                                    // Removendo chamada ao saveChatData()
+                                    
                                     chatMessages.scrollTop = chatMessages.scrollHeight;
                                     
                                     // Reproduzir o áudio automaticamente após um pequeno delay
@@ -2054,8 +2408,19 @@ function processFinalConfirmation(response) {
                                             setTimeout(() => {
                                                 hideTypingIndicator();
                                                 const priceMessage = "La tarifa es de solo <strong>$27</strong>";
-                                                const priceMessageEl = createTextMessage(priceMessage, getCurrentTime(), true);
+                                                const currentTime5 = getCurrentTime();
+                                                const priceMessageEl = createTextMessage(priceMessage, currentTime5, true);
                                                 chatMessages.appendChild(priceMessageEl);
+                                                
+                                                // Adicionar ao array displayedMessages 
+                                                displayedMessages.push({
+                                                    type: 'text',
+                                                    content: priceMessage,
+                                                    time: currentTime5,
+                                                    isHTML: true
+                                                });
+                                                // Removendo chamada ao saveChatData()
+                                                
                                                 chatMessages.scrollTop = chatMessages.scrollHeight;
                                                 
                                                 // Segundo áudio (6.mp3 em vez de 7.mp3)
@@ -2064,8 +2429,19 @@ function processFinalConfirmation(response) {
                                                     
                                                     setTimeout(() => {
                                                         hideTypingIndicator();
-                                                        const audioEl2 = createAudioMessage("0:23", getCurrentTime(), "assets/6.mp3");
+                                                        const currentTime6 = getCurrentTime();
+                                                        const audioEl2 = createAudioMessage("0:23", currentTime6, "assets/6.mp3");
                                                         chatMessages.appendChild(audioEl2);
+                                                        
+                                                        // Adicionar ao array displayedMessages 
+                                                        displayedMessages.push({
+                                                            type: 'audio',
+                                                            duration: "0:23",
+                                                            audioSrc: "assets/6.mp3",
+                                                            time: currentTime6
+                                                        });
+                                                        // Removendo chamada ao saveChatData()
+                                                        
                                                         chatMessages.scrollTop = chatMessages.scrollHeight;
                                                         
                                                         // Reproduzir o segundo áudio automaticamente após um pequeno delay
@@ -2083,8 +2459,19 @@ function processFinalConfirmation(response) {
                                                                 setTimeout(() => {
                                                                     hideTypingIndicator();
                                                                     const paymentMessage = "Dejaré un botón abajo para que realices el pago. Después, te enviaré el retrato de tu alma gemela por correo electrónico y te brindaré orientación personal durante los próximos meses para que el universo pueda manifestar rápidamente a la persona destinada a tener una conexión especial contigo.";
-                                                                    const paymentMessageEl = createTextMessage(paymentMessage, getCurrentTime(), false);
+                                                                    const currentTime7 = getCurrentTime();
+                                                                    const paymentMessageEl = createTextMessage(paymentMessage, currentTime7, false);
                                                                     chatMessages.appendChild(paymentMessageEl);
+                                                                    
+                                                                    // Adicionar ao array displayedMessages 
+                                                                    displayedMessages.push({
+                                                                        type: 'text',
+                                                                        content: paymentMessage,
+                                                                        time: currentTime7,
+                                                                        isHTML: false
+                                                                    });
+                                                                    // Removendo chamada ao saveChatData()
+                                                                    
                                                                     chatMessages.scrollTop = chatMessages.scrollHeight;
                                                                     
                                                                     // Adicionar imagem clicável como link para pagamento
@@ -2119,21 +2506,32 @@ function processFinalConfirmation(response) {
                                                                             imageMessageText.className = 'message-text image-container';
                                                                             imageMessageText.appendChild(imageLink);
                                                                             
-                                                                            const messageTimeContainer = document.createElement('div');
-                                                                            messageTimeContainer.className = 'message-time-container';
+                                                                            const imageTimeContainer = document.createElement('div');
+                                                                            imageTimeContainer.className = 'message-time-container';
                                                                             
-                                                                            const messageTime = document.createElement('span');
-                                                                            messageTime.className = 'message-time';
-                                                                            messageTime.textContent = getCurrentTime();
+                                                                            const imageTime = document.createElement('span');
+                                                                            imageTime.className = 'message-time';
+                                                                            imageTime.textContent = getCurrentTime();
                                                                             
-                                                                            messageTimeContainer.appendChild(messageTime);
+                                                                            imageTimeContainer.appendChild(imageTime);
                                                                             
                                                                             imageMessageContent.appendChild(imageMessageText);
-                                                                            imageMessageContent.appendChild(messageTimeContainer);
+                                                                            imageMessageContent.appendChild(imageTimeContainer);
                                                                             imageMessageEl.appendChild(imageMessageContent);
                                                                             
                                                                             // Adicionar a mensagem ao chat
                                                                             chatMessages.appendChild(imageMessageEl);
+                                                                            
+                                                                            // Adicionar ao array displayedMessages 
+                                                                            const imageTime8 = getCurrentTime();
+                                                                            displayedMessages.push({
+                                                                                type: 'image',
+                                                                                content: 'assets/img-3.png',
+                                                                                caption: null,
+                                                                                time: imageTime8
+                                                                            });
+                                                                            // Removendo chamada ao saveChatData()
+                                                                            
                                                                             chatMessages.scrollTop = chatMessages.scrollHeight;
                                                                             
                                                                             // Adicionar mensagem de áudio após imagem (7.mp3 em vez de 8.mp3)
@@ -2142,14 +2540,25 @@ function processFinalConfirmation(response) {
                                                                                 
                                                                                 setTimeout(() => {
                                                                                     hideTypingIndicator();
-                                                                                    const audioEl = createAudioMessage("0:24", getCurrentTime(), "assets/7.mp3");
-                                                                                    chatMessages.appendChild(audioEl);
+                                                                                    const currentTime9 = getCurrentTime();
+                                                                                    const audioEl3 = createAudioMessage("0:24", currentTime9, "assets/7.mp3");
+                                                                                    chatMessages.appendChild(audioEl3);
+                                                                                    
+                                                                                    // Adicionar ao array displayedMessages 
+                                                                                    displayedMessages.push({
+                                                                                        type: 'audio',
+                                                                                        duration: "0:24",
+                                                                                        audioSrc: "assets/7.mp3",
+                                                                                        time: currentTime9
+                                                                                    });
+                                                                                    // Removendo chamada ao saveChatData()
+                                                                                    
                                                                                     chatMessages.scrollTop = chatMessages.scrollHeight;
                                                                                     
                                                                                     // Reproduzir o áudio automaticamente após um pequeno delay
                                                                                     setTimeout(() => {
                                                                                         // Encontrar o botão de play do áudio e simular o clique
-                                                                                        const playButton = audioEl.querySelector('.play-button');
+                                                                                        const playButton = audioEl3.querySelector('.play-button');
                                                                                         if (playButton) {
                                                                                             playButton.click();
                                                                                         }

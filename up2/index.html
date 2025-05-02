@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mensaje Importante</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #fff;
+      color: #000;
+    }
+
+    .alert-top {
+      background-color: #d10000;
+      color: white;
+      padding: 15px;
+      font-weight: 900;
+      font-size: 2rem;
+      text-align: center;
+    }
+    .alert-top strong {
+      color: #ffeb3b;
+    }
+
+    .content {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    h1 span{
+      color: #791c5c;
+      font-size: 1.8rem;
+      font-weight: 900;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #000;
+      margin-bottom: 30px;
+    }
+
+    .video-placeholder {
+      background-color: #6b004a;
+      height: 340px;
+      border-radius: 6px;
+      margin: 0 auto 30px;
+      position: relative;
+    }
+
+    .warning {
+      font-size: 1.1rem;
+      color: #791c5c;
+      font-weight: 400;
+    }
+    .warning strong {
+      font-weight: 700;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="alert-top">
+    <strong>¡ESPERA!</strong><BR> HAY UN MENSAJE IMPORTANTE MÁS
+  </div>
+
+  <main class="content">
+    <h1> El Universo <span>OCULTA ALGUNA INFORMACIÓN</span>  about your future...</h1>
+
+    <div>
+      <!-- VSL -->
+      <div id="vid_6813e527576bb0a6c19ea83e" style="position: relative; width: 100%; padding: 56.25% 0 0;"> <img id="thumb_6813e527576bb0a6c19ea83e" src="https://images.converteai.net/bdd98c12-d2a7-41cd-8622-504d088bf64a/players/6813e527576bb0a6c19ea83e/thumbnail.jpg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block;" alt="thumbnail"> <div id="backdrop_6813e527576bb0a6c19ea83e" style=" -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); position: absolute; top: 0; height: 100%; width: 100%; "></div> </div> <script type="text/javascript" id="scr_6813e527576bb0a6c19ea83e"> var s=document.createElement("script"); s.src="https://scripts.converteai.net/bdd98c12-d2a7-41cd-8622-504d088bf64a/players/6813e527576bb0a6c19ea83e/player.js", s.async=!0,document.head.appendChild(s); </script>
+    </div>
+
+    <p class="warning">
+      ⚠️ ¡Mira cómo dibujo a tu alma gemela!
+    </p>
+    <!-- HOTMART - Sales Funnel Widget -->
+    <!--- sales funnel container --->
+    <div id="hotmart-sales-funnel"></div>
+
+    <!--- script load and setup --->
+    <script src="https://checkout.hotmart.com/lib/hotmart-checkout-elements.js"></script>
+    <script>
+    checkoutElements.init('salesFunnel').mount('#hotmart-sales-funnel')
+    </script>
+    <!-- HOTMART - Sales Funnel Widget -->
+  </main>
+  <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          function getAllParams(url) {
+              const urlObj = new URL(url);
+              let paramString = "";
+
+              // Iterando sobre todos os parâmetros da URL
+              for (const [key, value] of urlObj.searchParams) {
+                  paramString += `${paramString ? '&' : ''}${key}=${value}`;
+              }
+
+              return paramString;
+          }
+
+          const params = getAllParams(window.location.href);
+
+          if (params) {
+              const links = document.querySelectorAll("a");
+
+              links.forEach(link => {
+                  const separator = link.href.includes("?") ? "&" : "?";
+                  link.href += `${separator}${params}`;
+              });
+          }
+      });
+    </script>
+
+</body>
+</html>
