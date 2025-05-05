@@ -91,6 +91,28 @@
         }
     });
   </script>
+  <script>
+    function scrollToInputOnFocus() {
+    const inputs = document.querySelectorAll('input, textarea');
+  
+    inputs.forEach(input => {
+      input.addEventListener('focus', () => {
+        // Timeout é necessário para garantir que o teclado já tenha sido aberto
+        setTimeout(() => {
+          // Faz scroll até o input no foco
+          input.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  
+          // Em alguns navegadores é melhor forçar o scroll até o topo da página
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 300); // Ajuste esse valor se necessário
+      });
+    });
+  }
+  
+  // Ativar assim que o DOM estiver carregado
+  document.addEventListener('DOMContentLoaded', scrollToInputOnFocus);
+
+  </script>
 
 </body>
 </html>
