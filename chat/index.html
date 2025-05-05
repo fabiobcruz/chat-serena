@@ -92,25 +92,26 @@
     });
   </script>
   <script>
-    function scrollToInputOnFocus() {
+    function fixMobileInputScroll() {
     const inputs = document.querySelectorAll('input, textarea');
   
     inputs.forEach(input => {
       input.addEventListener('focus', () => {
-        // Timeout é necessário para garantir que o teclado já tenha sido aberto
         setTimeout(() => {
-          // Faz scroll até o input no foco
-          input.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  
-          // Em alguns navegadores é melhor forçar o scroll até o topo da página
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 300); // Ajuste esse valor se necessário
+          // Garante que o campo esteja no topo da tela visível
+          const y = input.getBoundingClientRect().top + window.scrollY - 10;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }, 500); // Dá tempo do teclado abrir
       });
     });
   }
   
-  // Ativar assim que o DOM estiver carregado
-  document.addEventListener('DOMContentLoaded', scrollToInputOnFocus);
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.innerWidth < 768) { // Aplica apenas em mobile
+      fixMobileInputScroll();
+    }
+  });
+
 
   </script>
 
