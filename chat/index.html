@@ -92,36 +92,24 @@
     });
   </script>
   <script>
-   function forceInputVisibleOnMobile() {
-  const inputs = document.querySelectorAll('input, textarea');
+   function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
+}
+
+function scrollToTopOnInputFocus() {
+  if (!isMobileDevice()) return;
+
+  const inputs = document.querySelectorAll('input, textarea, select');
 
   inputs.forEach(input => {
     input.addEventListener('focus', () => {
-      setTimeout(() => {
-        // Se o browser suporta visualViewport, usamos isso
-        if (window.visualViewport) {
-          const inputRect = input.getBoundingClientRect();
-          const viewportHeight = window.visualViewport.height;
-
-          // Se o input estiver abaixo da viewport visível (após o teclado abrir)
-          if (inputRect.bottom > viewportHeight) {
-            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        } else {
-          // Fallback para navegadores que não suportam visualViewport
-          input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 600); // Delay maior para garantir que o teclado abriu
+      // Força scroll total para o topo
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  if (window.innerWidth < 768) {
-    forceInputVisibleOnMobile();
-  }
-});
-
+document.addEventListener('DOMContentLoaded', scrollToTopOnInputFocus);
   </script>
 
 </body>
