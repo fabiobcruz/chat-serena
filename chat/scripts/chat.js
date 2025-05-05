@@ -375,6 +375,15 @@ function handleAudioPlayback(playButton, progressBar) {
     playButton.classList.remove('playing');
     playButton.innerHTML = '<i class="fas fa-play"></i>';
     clearInterval(playButton.dataset.intervalId);
+    
+    // Cancelar a animação quando pausado
+    if (playButton.dataset.animationId) {
+      const animationId = parseInt(playButton.dataset.animationId);
+      if (!isNaN(animationId)) {
+        cancelAnimationFrame(animationId);
+        console.log('Animação pausada - ID:', animationId);
+      }
+    }
   } else {
     // Play audio
     playButton.classList.add('playing');
@@ -425,6 +434,11 @@ function handleAudioPlayback(playButton, progressBar) {
     // Usar requestAnimationFrame para uma animação mais suave
     let animationId;
     const updateProgress = () => {
+      // Verificar se ainda está no modo de reprodução
+      if (!playButton.classList.contains('playing')) {
+        return; // Não continuar a animação se não estiver reproduzindo
+      }
+      
       // Calcular o tempo decorrido desde o início
       const elapsed = Date.now() - startTime;
       
@@ -460,7 +474,7 @@ function handleAudioPlayback(playButton, progressBar) {
     const originalClickHandler = playButton.onclick;
     playButton.onclick = function() {
       if (playButton.classList.contains('playing')) {
-        cancelAnimationFrame(playButton.dataset.animationId);
+        cancelAnimationFrame(parseInt(playButton.dataset.animationId));
       }
       if (originalClickHandler) originalClickHandler();
     };
