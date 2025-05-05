@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soul Mate</title>
+    <script src="https://cdn.tailwindcss.com/"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet">
+    <style>
+        /* Custom CSS would go into style.css */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Background image styling */
+            background-image: url('https://images.unsplash.com/photo-1538370965046-79c0d6907d47?q=80&amp;w=2069&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.0.3&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); /* Placeholder space background */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        /* Custom gradient for the button */
+        .gradient-button {
+            background: linear-gradient(90deg, #E85B8A 0%, #FFAF8A 100%);
+        }
+        /* Optional: Add a subtle overlay */
+        .overlay {
+            background-color: rgba(15, 23, 42, 0.6); /* Adjust color and opacity as needed */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen text-white">
+
+    <div class="absolute inset-0 overlay"></div> <div class="relative z-10 flex flex-col items-center p-8 max-w-md w-full text-center">
+        <div class="mb-4 flex items-center space-x-2">
+            <img src="img/logo.svg" alt="Logo">
+        </div>
+
+        <h1 class="text-3xl font-bold mb-1">Lectura astral</h1>
+        <p class="text-sm text-gray-300 mb-8">y dibujo de alma gemela</p>
+
+        <form class="w-full max-w-xs" id="email-form">
+            <label for="email" class="block text-xs text-left text-gray-400 mb-2 ml-1">Inicia sesión con tu correo:</label>
+            <input
+                type="email"
+                id="email"
+                placeholder="Escribe tu correo electrónico"
+                class="w-full px-4 py-2 mb-6 bg-slate-700 bg-opacity-50 border border-purple-400 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+                required
+            >
+            <button
+                type="submit"
+                class="w-full gradient-button text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:opacity-90 transition duration-300"
+            >
+                Entrar
+            </button>
+        </form>
+
+        <p class="mt-16 text-xs text-gray-400 tracking-wider">MAESTRA SERENA</p>
+    </div>
+
+    <script>
+        console.log("Login page loaded");
+
+        const emailForm = document.getElementById('email-form');
+        if (emailForm) {
+            emailForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Verifica se já existe uma escolha salva
+                const hasQuizCompleted = localStorage.getItem('soulmateDrawingPdf');
+                
+                if (hasQuizCompleted) {
+                    // Se já respondeu o quiz, vai direto para a página de resultado
+                    window.location.href = "../logged/index.html";
+                } else {
+                    // Se não respondeu, vai para o quiz
+                    window.location.href = "../quiz/index.html";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

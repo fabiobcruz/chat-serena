@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soul Mate</title>
+    <script src="https://cdn.tailwindcss.com/"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet">
+    <style>
+        /* Custom CSS */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('https://images.unsplash.com/photo-1538370965046-79c0d6907d47?q=80&amp;w=2069&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.0.3&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .gradient-button {
+             background: linear-gradient(90deg, #A050D0 0%, #E85B8A 100%);
+        }
+        .gradient-button-modal {
+             background: linear-gradient(90deg, #8A2BE2 0%, #D470A7 100%); /* Example gradient for modal button */
+        }
+        .overlay-bg {
+            background-color: rgba(15, 23, 42, 0.8); /* Darker overlay for modal */
+        }
+        .content-container {
+             min-height: 100vh;
+             padding-bottom: 4rem;
+        }
+        /* Prevent body scroll when modal is open */
+        .modal-open {
+            overflow: hidden;
+        }
+        /* Custom scrollbar for modal content if needed */
+        .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .modal-body::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="text-white">
+
+    <div class="absolute inset-0 overlay-bg z-0 opacity-60"></div> <div class="relative z-10 flex flex-col items-center justify-start pt-12 p-6 md:p-8 content-container">
+
+        <div class="flex flex-col items-center mb-6 text-center relative">
+            <img src="assets/img/foto-master%20serena-app.png" alt="[Imagem de Master Serena]" class="z-10 relative -mb-12">
+            <div class="absolute left-1/2 -translate-x-1/2 -bottom-4 w-full max-w-lg z-20 pointer-events-none" style="height: 32px;"></div>
+        </div>
+
+        <div class="bg-white text-gray-800 rounded-lg shadow-xl p-6 w-full max-w-lg mb-8 relative z-20">
+             <p class="mb-4 text-sm leading-relaxed">Hola, estoy muy emocionada de revelarte el retrato de tu alma gemela. ❤️‍🔥</p>
+             <p class="mb-4 text-sm leading-relaxed">¡Ya estoy trabajando en tu retrato y te será revelado pronto! Este proceso de dibujo toma</p>
+             <p class="mb-4 text-sm leading-relaxed">de 15 a 20 minutos debido a la importancia de resaltar cada detalle de tu alma gemela. 
+                Necesito asegurarme de que cada característica de tu alma gemela se destaque de manera única y significativa.</p>
+             <p id="countdown-timer" class="text-sm leading-relaxed">Dibujo en proceso… (15:00)</p>
+        </div>
+
+        <button type="button" disabled class="w-full max-w-lg gradient-button text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:opacity-90 transition duration-300 mb-12">
+            ¡Lectura lista! Accede aquí.
+        </button>
+
+        <div class="w-full max-w-lg text-left">
+            <h3 class="text-xl font-semibold mb-4 text-white text-center">También tienes acceso a</h3>
+            <div class="space-y-4">
+                <div id="item-characteristics" class="bg-white text-gray-800 rounded-lg shadow-lg p-4 flex items-center space-x-4 cursor-pointer hover:shadow-xl transition duration-200">
+                    <img src="assets/img/All%20the%20characteristics.jpg" alt="[Imagen de Todas las Características]" class="w-16 h-20 object-cover rounded flex-shrink-0" onerror="this.onerror=null; this.src='https://placehold.co/60x80/cccccc/FFFFFF?text=Error'">
+                    <div>
+                        <h4 class="font-semibold text-base mb-1">Todas las Características</h4>
+                        <p class="text-xs text-gray-600 leading-snug">¡A través de una profunda técnica de revelación, descubriré todas las características de tu alma gemela! Con esta función adicional, tendrás todas las características de esa persona a mano, como su nombre, personalidad, ubicación aproximada y sus pasatiempos favoritos...</p>
+                    </div>
+                </div>
+
+                <div id="item-revelations" class="bg-white text-gray-800 rounded-lg shadow-lg p-4 flex items-center space-x-4 cursor-pointer hover:shadow-xl transition duration-200">
+                     <img src="assets/img/Deep%20Astral%20Revelations.jpg" alt="[Imagen de Revelaciones Astrales Profundas]" class="w-16 h-20 object-cover rounded flex-shrink-0" onerror="this.onerror=null; this.src='https://placehold.co/60x80/cccccc/FFFFFF?text=Error'">
+                    <div>
+                        <h4 class="font-semibold text-base mb-1">Revelaciones Astrales Profundas</h4>
+                        <p class="text-xs text-gray-600 leading-snug">El universo guarda secretos sobre tu futuro en el amor, las finanzas y el bienestar. Solo a través de una lectura completa de tu carta astral puedo revelar cuáles son estos secretos sobre tu futuro y quién eres hoy.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="item-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div id="modal-overlay" class="fixed inset-0 overlay-bg transition-opacity"></div>
+        <div class="relative bg-white rounded-lg shadow-xl overflow-hidden w-full max-w-2xl mx-auto z-10">
+            <div class="flex justify-end p-2">
+                <button id="close-modal-button" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex items-center" aria-label="Fechar modal">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414 1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 pt-0 text-center modal-body max-h-[70vh] overflow-y-auto">
+                <div id="modal-description"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Modal Elements ---
+        const modal = document.getElementById('item-modal');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const closeModalButton = document.getElementById('close-modal-button');
+        const modalDescription = document.getElementById('modal-description');
+
+        // --- Functions ---
+        function openModal() {
+        // Insere o novo vídeo externo
+        modalDescription.innerHTML = `
+            <div id="vid_681633be5dc4b281b98b1855" style="position: relative; width: 100%; padding: 126.66666666666666% 0 0;">
+                <img id="thumb_681633be5dc4b281b98b1855" src="https://images.converteai.net/bdd98c12-d2a7-41cd-8622-504d088bf64a/players/681633be5dc4b281b98b1855/thumbnail.jpg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block;" alt="thumbnail">
+                <div id="backdrop_681633be5dc4b281b98b1855" style="-webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); position: absolute; top: 0; height: 100%; width: 100%;"></div>
+            </div>
+        `;
+
+        // Remove script anterior (se houver)
+        const oldScript = document.getElementById('scr_681633be5dc4b281b98b1855');
+        if (oldScript) {
+            oldScript.remove();
+        }
+
+        // Cria novo script para carregar o player
+        const script = document.createElement('script');
+        script.id = 'scr_681633be5dc4b281b98b1855';
+        script.src = "https://scripts.converteai.net/bdd98c12-d2a7-41cd-8622-504d088bf64a/players/681633be5dc4b281b98b1855/player.js";
+        script.async = true;
+        document.head.appendChild(script);
+
+        // Exibe o modal
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.classList.add('modal-open');
+    }
+
+
+        function closeModal() {
+            if (!modal) return;
+            modalDescription.innerHTML = '';
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.classList.remove('modal-open');
+        }
+
+        // --- Event Listeners ---
+        // Open PDF in new tab for item-characteristics
+        const itemCharacteristics = document.getElementById('item-characteristics');
+        if (itemCharacteristics) {
+            itemCharacteristics.addEventListener('click', function(e) {
+                window.open('assets/pdf/pdf01.pdf', '_blank');
+            });
+        }
+
+        // Modal logic only for item-revelations
+        const itemRevelations = document.getElementById('item-revelations');
+        if (itemRevelations) {
+            itemRevelations.addEventListener('click', openModal);
+        }
+
+        // Listener for close button
+        if (closeModalButton) {
+            closeModalButton.addEventListener('click', closeModal);
+        }
+
+        // Listener for overlay click
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', closeModal);
+        }
+
+        // Optional: Close modal with Escape key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        // --- PDF Drawing Logic ---
+        function getRandomIntInclusive(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function getPdfPath(skin, num) {
+            return `/assets/pdf/Desenhos/${skin}/${skin} ${num.toString().padStart(2, '0')}.pdf`;
+        }
+
+        function getParamFromUrl(name) {
+            const url = new URL(window.location.href);
+            return url.searchParams.get(name);
+        }
+
+        // --- Initialize Page ---
+        (function(){
+            // Gerencia o PDF da alma gêmea
+            const pdfKey = 'soulmateDrawingPdf';
+            const countdownKey = 'soulmateCountdownComplete';
+            let pdfPath = localStorage.getItem(pdfKey);
+
+            if (!pdfPath) {
+                const skin = getParamFromUrl('skin');
+                if (skin === 'HB' || skin === 'HN') {
+                    const num = getRandomIntInclusive(1, 6);
+                    pdfPath = getPdfPath(skin, num);
+                    localStorage.setItem(pdfKey, pdfPath);
+                }
+            }
+
+            // Configura o botão de acesso ao PDF
+            const accessButton = document.querySelector('.gradient-button');
+            if (accessButton) {
+                accessButton.addEventListener('click', function() {
+                    const pdf = localStorage.getItem(pdfKey);
+                    if (pdf) {
+                        window.open(pdf, '_blank');
+                    } else {
+                        alert('Drawing not available. Please refresh the page after completing the quiz.');
+                    }
+                });
+            }
+
+            // Inicia o contador apenas se não estiver completo
+            const countdownEl = document.getElementById('countdown-timer');
+            
+            // Verifica se o contador já foi completado
+            if (localStorage.getItem(countdownKey) === 'true') {
+                countdownEl.textContent = "¡Proceso de dibujo completo!";
+                accessButton.disabled = false;
+                return; // Não inicia o contador
+            }
+
+            let remaining = 900;
+            function updateCountdown() {
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                countdownEl.textContent = `Dibujo en proceso… (${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')})`;
+                if(remaining <= 0){
+                    clearInterval(timerInterval);
+                    countdownEl.textContent = "¡Proceso de dibujo completo!";
+                    accessButton.disabled = false;
+                    localStorage.setItem(countdownKey, 'true'); // Salva que completou
+                }
+                remaining--;
+            }
+            updateCountdown();
+            const timerInterval = setInterval(updateCountdown, 1000);
+        })();
+    </script>
+</body>
+</html>
+``` 

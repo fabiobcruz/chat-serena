@@ -583,13 +583,18 @@ function showNameInput() {
   // Adicionar o container ao chat
   chatMessages.appendChild(inputContainer);
   
-  // Focar no campo de entrada
+  // Focar no campo de entrada e rolar para garantir visibilidade
   setTimeout(() => {
     input.focus();
+    
+    // Usar a função de rolagem automática
+    if (window.scrollToInputOnFocus) {
+      window.scrollToInputOnFocus(input);
+    } else {
+      // Fallback para o comportamento antigo
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
   }, 100);
-  
-  // Rolar para baixo
-  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 // Função para enviar a resposta do nome
@@ -1009,13 +1014,18 @@ function showSignInput() {
   // Adicionar o container ao chat
   chatMessages.appendChild(inputContainer);
   
-  // Focar no campo de entrada
+  // Focar no campo de entrada e rolar para garantir visibilidade
   setTimeout(() => {
     input.focus();
+    
+    // Usar a função de rolagem automática
+    if (window.scrollToInputOnFocus) {
+      window.scrollToInputOnFocus(input);
+    } else {
+      // Fallback para o comportamento antigo
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
   }, 100);
-  
-  // Rolar para baixo
-  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 // Função para enviar a resposta do signo
@@ -1202,13 +1212,18 @@ function showBirthdateInput() {
   // Adicionar o container ao chat
   chatMessages.appendChild(inputContainer);
   
-  // Focar no campo de entrada
+  // Focar no campo de entrada e rolar para garantir visibilidade
   setTimeout(() => {
     input.focus();
+    
+    // Usar a função de rolagem automática
+    if (window.scrollToInputOnFocus) {
+      window.scrollToInputOnFocus(input);
+    } else {
+      // Fallback para o comportamento antigo
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
   }, 100);
-  
-  // Rolar para baixo
-  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 // Função para enviar a resposta da data de nascimento
@@ -1347,9 +1362,17 @@ function showBirthtimeInput() {
   // Adicionar o container ao chat
   chatMessages.appendChild(inputContainer);
   
-  // Focar no campo de entrada
+  // Focar no campo de entrada e rolar para garantir visibilidade
   setTimeout(() => {
     input.focus();
+    
+    // Usar a função de rolagem automática
+    if (window.scrollToInputOnFocus) {
+      window.scrollToInputOnFocus(input);
+    } else {
+      // Fallback para o comportamento antigo
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
   }, 100);
   
   // Rolar para baixo
@@ -1939,13 +1962,18 @@ function showConfirmDrawingInput() {
     // Adicionar o container ao chat
     chatMessages.appendChild(inputContainer);
     
-    // Focar no campo de entrada
+    // Focar no campo de entrada e rolar para garantir visibilidade
     setTimeout(() => {
         input.focus();
+        
+        // Usar a função de rolagem automática
+        if (window.scrollToInputOnFocus) {
+            window.scrollToInputOnFocus(input);
+        } else {
+            // Fallback para o comportamento antigo
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
     }, 100);
-    
-    // Rolar para baixo
-    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 // Função para processar a resposta de confirmação (sem armazenar)

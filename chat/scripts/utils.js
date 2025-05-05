@@ -121,3 +121,58 @@ function convertEmojis(text) {
   
   return text;
 }
+
+/**
+ * Função para fazer a tela rolar para exibir o campo de input quando o teclado virtual é ativado
+ * @param {HTMLElement} inputElement - O elemento de input que receberá foco
+ */
+function scrollToInputOnFocus(inputElement) {
+  if (!inputElement) return;
+  
+  // Função para rolar para o elemento
+  const scrollToElement = () => {
+    // Espera um momento para que o teclado virtual seja totalmente exibido
+    setTimeout(() => {
+      // Calcula a posição do elemento
+      const rect = inputElement.getBoundingClientRect();
+      const elementTop = rect.top;
+      const elementBottom = rect.bottom;
+      
+      // Altura da janela visível (pode ser menor quando o teclado virtual estiver aberto)
+      const windowHeight = window.innerHeight;
+      
+      // Se o elemento não estiver totalmente visível, rolamos para ele
+      if (elementBottom > windowHeight || elementTop < 0) {
+        // Rolamos para o elemento com um pequeno offset para garantir boa visibilidade
+        const scrollTarget = elementTop + window.pageYOffset - (windowHeight / 4);
+        window.scrollTo({
+          top: scrollTarget,
+          behavior: 'smooth'
+        });
+        
+        // Em alguns dispositivos, podemos precisar de uma segunda rolagem após um delay maior
+        setTimeout(() => {
+          const updatedRect = inputElement.getBoundingClientRect();
+          if (updatedRect.bottom > windowHeight) {
+            window.scrollTo({
+              top: window.pageYOffset + (updatedRect.bottom - windowHeight) + 30,
+              behavior: 'smooth'
+            });
+          }
+        }, 500);
+      }
+    }, 300);
+  };
+  
+  // Adiciona listeners para os eventos focus e click
+  inputElement.addEventListener('focus', scrollToElement);
+  inputElement.addEventListener('click', scrollToElement);
+  
+  // Também rolamos quando a página for carregada, se o input já estiver focado
+  if (document.activeElement === inputElement) {
+    scrollToElement();
+  }
+}
+
+// Exportamos a função para ser usada em outros arquivos
+window.scrollToInputOnFocus = scrollToInputOnFocus;
