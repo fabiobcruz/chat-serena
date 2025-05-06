@@ -64,9 +64,9 @@
         <div class="bg-white text-gray-800 rounded-lg shadow-xl p-6 w-full max-w-lg mb-8 relative z-20">
              <p class="mb-4 text-sm leading-relaxed">Hola, estoy muy emocionada de revelarte el retrato de tu alma gemela. ❤️‍🔥</p>
              <p class="mb-4 text-sm leading-relaxed">¡Ya estoy trabajando en tu retrato y te será revelado pronto! Este proceso de dibujo toma</p>
-             <p class="mb-4 text-sm leading-relaxed">de 15 a 20 minutos debido a la importancia de resaltar cada detalle de tu alma gemela. 
+             <p class="mb-4 text-sm leading-relaxed">de 5 a 10 minutos debido a la importancia de resaltar cada detalle de tu alma gemela. 
                 Necesito asegurarme de que cada característica de tu alma gemela se destaque de manera única y significativa.</p>
-             <p id="countdown-timer" class="text-sm leading-relaxed">Dibujo en proceso… (15:00)</p>
+             <p id="countdown-timer" class="text-sm leading-relaxed">Dibujo en proceso… (5:00)</p>
         </div>
 
         <button type="button" disabled class="w-full max-w-lg gradient-button text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:opacity-90 transition duration-300 mb-12">
@@ -241,21 +241,26 @@
                 return; // Não inicia o contador
             }
 
-            let remaining = 900;
-            function updateCountdown() {
-                const minutes = Math.floor(remaining / 60);
-                const seconds = remaining % 60;
-                countdownEl.textContent = `Dibujo en proceso… (${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')})`;
-                if(remaining <= 0){
-                    clearInterval(timerInterval);
-                    countdownEl.textContent = "¡Proceso de dibujo completo!";
-                    accessButton.disabled = false;
-                    localStorage.setItem(countdownKey, 'true'); // Salva que completou
+            let remaining = 300; // 5 minutos em segundos
+
+                function updateCountdown() {
+                    const minutes = Math.floor(remaining / 60); // Corrigido para 60
+                    const seconds = remaining % 60;
+                    countdownEl.textContent = `Dibujo en proceso… (${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')})`;
+                    
+                    if (remaining <= 0) {
+                        clearInterval(timerInterval);
+                        countdownEl.textContent = "¡Proceso de dibujo completo!";
+                        accessButton.disabled = false;
+                        localStorage.setItem(countdownKey, 'true'); // Salva que completou
+                    }
+
+                    remaining--;
                 }
-                remaining--;
-            }
-            updateCountdown();
-            const timerInterval = setInterval(updateCountdown, 1000);
+
+                updateCountdown();
+                const timerInterval = setInterval(updateCountdown, 1000);
+
         })();
     </script>
 </body>
