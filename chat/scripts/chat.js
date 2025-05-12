@@ -2532,7 +2532,7 @@ function processFinalConfirmation(response) {
                                                                             
                                                                             // Criar link clicável
                                                                             const imageLink = document.createElement('a');
-                                                                            imageLink.href = 'TROCAR AQUI';
+                                                                            imageLink.href = 'https://pay.hotmart.com/K99339842P?off=ojh6hy6y&checkoutMode=10';
                                                                             imageLink.target = '_blank'; // Abrir em nova aba
                                                                             
                                                                             // Adicionar imagem dentro do link
