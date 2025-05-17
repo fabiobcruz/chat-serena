@@ -42,7 +42,6 @@ body {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.06), 0 2px 5px 0 rgba(0, 0, 0, 0.2);
-  position: relative;
 }
 
 /* Chat Header */
@@ -53,9 +52,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 100;
 }
 
 .contact-info {
@@ -118,7 +114,6 @@ body {
   overflow-y: auto;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
-  padding-top: 10px;
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -235,9 +230,30 @@ body {
 
 /* Image Message */
 .message-image {
-  max-width: 250px;
+  max-width: 350px;
+  width: 100%;
   border-radius: 6px;
   margin-bottom: 5px;
+}
+
+/* Video Message */
+.message-video-container {
+  max-width: 350px;
+  border-radius: 6px;
+  margin-bottom: 5px;
+  overflow: hidden;
+}
+
+.message-video-container img {
+  max-width: 100%;
+  border-radius: 6px;
+}
+
+/* Media query para ajustar o tamanho do vídeo em dispositivos móveis */
+@media (max-width: 768px) {
+  .message-video-container {
+    max-width: 100%;
+  }
 }
 
 /* Audio Message */
@@ -354,23 +370,6 @@ body {
     height: 100vh;
     width: 100%;
     border-radius: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .chat-header {
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-  }
-  
-  .chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding-top: 70px;
   }
   
   .back-button {

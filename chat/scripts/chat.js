@@ -212,6 +212,16 @@ function displayMessage(messageInfo) {
           isHTML: messageInfo.isHTML
         });
         break;
+      case 'video':
+        messageEl = createVideoMessage(messageInfo.embedCode, messageInfo.caption, currentTime);
+        // Store displayed message
+        displayedMessages.push({
+          type: 'video',
+          embedCode: messageInfo.embedCode,
+          caption: messageInfo.caption,
+          time: currentTime
+        });
+        break;
       // Outros casos podem ser adicionados aqui se necessário
     }
     
@@ -259,45 +269,17 @@ function displayMessage(messageInfo) {
           isHTML: messageInfo.isHTML
         });
         break;
-      case 'image':
-        messageEl = createImageMessage(messageInfo.content, messageInfo.caption, currentTime);
+      case 'video':
+        messageEl = createVideoMessage(messageInfo.embedCode, messageInfo.caption, currentTime);
         // Store displayed message
         displayedMessages.push({
-          type: 'image',
-          content: messageInfo.content,
+          type: 'video',
+          embedCode: messageInfo.embedCode,
           caption: messageInfo.caption,
           time: currentTime
         });
         break;
-      case 'audio':
-        messageEl = createAudioMessage(messageInfo.duration, currentTime, messageInfo.audioSrc);
-        // Store displayed message
-        displayedMessages.push({
-          type: 'audio',
-          duration: messageInfo.duration,
-          audioSrc: messageInfo.audioSrc,
-          time: currentTime
-        });
-        break;
-      case 'link':
-        messageEl = createLinkMessage(messageInfo.content, messageInfo.url, messageInfo.preview, currentTime);
-        // Store displayed message
-        displayedMessages.push({
-          type: 'link',
-          content: messageInfo.content,
-          url: messageInfo.url,
-          preview: messageInfo.preview,
-          time: currentTime
-        });
-        break;
-      default:
-        messageEl = createTextMessage(messageInfo.content, currentTime);
-        // Store displayed message
-        displayedMessages.push({
-          type: 'text',
-          content: messageInfo.content,
-          time: currentTime
-        });
+      // Outros casos podem ser adicionados aqui se necessário
     }
     
     // Add message to chat
@@ -375,15 +357,6 @@ function handleAudioPlayback(playButton, progressBar) {
     playButton.classList.remove('playing');
     playButton.innerHTML = '<i class="fas fa-play"></i>';
     clearInterval(playButton.dataset.intervalId);
-    
-    // Cancelar a animação quando pausado
-    if (playButton.dataset.animationId) {
-      const animationId = parseInt(playButton.dataset.animationId);
-      if (!isNaN(animationId)) {
-        cancelAnimationFrame(animationId);
-        console.log('Animação pausada - ID:', animationId);
-      }
-    }
   } else {
     // Play audio
     playButton.classList.add('playing');
@@ -434,11 +407,6 @@ function handleAudioPlayback(playButton, progressBar) {
     // Usar requestAnimationFrame para uma animação mais suave
     let animationId;
     const updateProgress = () => {
-      // Verificar se ainda está no modo de reprodução
-      if (!playButton.classList.contains('playing')) {
-        return; // Não continuar a animação se não estiver reproduzindo
-      }
-      
       // Calcular o tempo decorrido desde o início
       const elapsed = Date.now() - startTime;
       
@@ -474,7 +442,7 @@ function handleAudioPlayback(playButton, progressBar) {
     const originalClickHandler = playButton.onclick;
     playButton.onclick = function() {
       if (playButton.classList.contains('playing')) {
-        cancelAnimationFrame(parseInt(playButton.dataset.animationId));
+        cancelAnimationFrame(playButton.dataset.animationId);
       }
       if (originalClickHandler) originalClickHandler();
     };
@@ -964,6 +932,11 @@ function createAndSaveMessage(content, isHTML = false, type = 'text', extraParam
       messageEl = createAudioMessage(extraParams.duration, currentTime, content);
       messageData.audioSrc = content;
       messageData.duration = extraParams.duration;
+      break;
+    case 'video':
+      messageEl = createVideoMessage(content, extraParams.caption, currentTime);
+      messageData.embedCode = content;
+      messageData.caption = extraParams.caption;
       break;
     case 'link':
       messageEl = createLinkMessage(content, extraParams.url, extraParams.preview, currentTime);
@@ -2604,13 +2577,142 @@ function processFinalConfirmation(response) {
                                                                                         if (playButton) {
                                                                                             playButton.click();
                                                                                         }
+                                                                                        
+                                                                                        // Adicionar vídeo após 10 segundos (depois do áudio 7.mp3)
+                                                                                        setTimeout(() => {
+                                                                                          showTypingIndicator();
+                                                                                          
+                                                                                          setTimeout(() => {
+                                                                                              hideTypingIndicator();
+                                                                                              const currentTime5 = getCurrentTime();
+                                                                                              const imageEl1 = createImageMessage("assets/7.gif", null, currentTime5);
+                                                                                              chatMessages.appendChild(imageEl1);
+                                                                                              
+                                                                                              // Adicionar ao array displayedMessages 
+                                                                                              displayedMessages.push({
+                                                                                                type: 'image',
+                                                                                                content: "assets/7.gif",
+                                                                                                caption: null,
+                                                                                                time: currentTime5
+                                                                                              });
+                                                                                              // Removendo chamada ao saveChatData()
+
+                                                                                              setTimeout(() => {
+                                                                                                showTypingIndicator();
+                                                                                                
+                                                                                                setTimeout(() => {
+                                                                                                    hideTypingIndicator();
+                                                                                                    const currentTime5 = getCurrentTime();
+                                                                                                    const imageEl1 = createImageMessage("assets/8.gif", null, currentTime5);
+                                                                                                    chatMessages.appendChild(imageEl1);
+                                                                                                    
+                                                                                                    // Adicionar ao array displayedMessages 
+                                                                                                    displayedMessages.push({
+                                                                                                      type: 'image',
+                                                                                                      content: "assets/8.gif",
+                                                                                                      caption: null,
+                                                                                                      time: currentTime5
+                                                                                                    });
+                                                                                                    // Removendo chamada ao saveChatData()
+
+                                                                                                    setTimeout(() => {
+                                                                                                      showTypingIndicator();
+                                                                                                      
+                                                                                                      setTimeout(() => {
+                                                                                                          hideTypingIndicator();
+                                                                                                          const currentTime9 = getCurrentTime();
+                                                                                                          const audioEl3 = createAudioMessage("0:22", currentTime9, "assets/8.mp3");
+                                                                                                          chatMessages.appendChild(audioEl3);
+                                                                                                          
+                                                                                                          // Adicionar ao array displayedMessages 
+                                                                                                          displayedMessages.push({
+                                                                                                              type: 'audio',
+                                                                                                              duration: "0:22",
+                                                                                                              audioSrc: "assets/8.mp3",
+                                                                                                              time: currentTime9
+                                                                                                          });
+
+                                                                                                        // Encontrar o botão de play do áudio e simular o clique
+                                                                                                        const playButton = audioEl3.querySelector('.play-button');
+                                                                                                        if (playButton) {
+                                                                                                            playButton.click();
+                                                                                                        }
+                                                                                                        
+                                                                                                        // Adicionar imagem clicável como link para pagamento
+                                                                                                        setTimeout(() => {
+                                                                                                            showTypingIndicator();
+                                                                                                            
+                                                                                                            setTimeout(() => {
+                                                                                                                hideTypingIndicator();
+                                                                                                                
+                                                                                                                // Criar elemento de mensagem para a imagem clicável
+                                                                                                                const imageMessageEl = document.createElement('div');
+                                                                                                                imageMessageEl.className = 'message received';
+                                                                                                                
+                                                                                                                const imageMessageContent = document.createElement('div');
+                                                                                                                imageMessageContent.className = 'message-content';
+                                                                                                                
+                                                                                                                // Criar link clicável
+                                                                                                                const imageLink = document.createElement('a');
+                                                                                                                imageLink.href = 'https://pay.hotmart.com/K99339842P?off=ojh6hy6y&checkoutMode=10';
+                                                                                                                imageLink.target = '_blank'; // Abrir em nova aba
+                                                                                                                
+                                                                                                                // Adicionar imagem dentro do link
+                                                                                                                const imageElement = document.createElement('img');
+                                                                                                                imageElement.src = 'assets/img-3.png';
+                                                                                                                imageElement.className = 'chat-image';
+                                                                                                                imageElement.alt = 'Realizar pago';
+                                                                                                                
+                                                                                                                // Montar a estrutura
+                                                                                                                imageLink.appendChild(imageElement);
+                                                                                                                
+                                                                                                                const imageMessageText = document.createElement('div');
+                                                                                                                imageMessageText.className = 'message-text image-container';
+                                                                                                                imageMessageText.appendChild(imageLink);
+                                                                                                                
+                                                                                                                const imageTimeContainer = document.createElement('div');
+                                                                                                                imageTimeContainer.className = 'message-time-container';
+                                                                                                                
+                                                                                                                const imageTime = document.createElement('span');
+                                                                                                                imageTime.className = 'message-time';
+                                                                                                                imageTime.textContent = getCurrentTime();
+                                                                                                                
+                                                                                                                imageTimeContainer.appendChild(imageTime);
+                                                                                                                
+                                                                                                                imageMessageContent.appendChild(imageMessageText);
+                                                                                                                imageMessageContent.appendChild(imageTimeContainer);
+                                                                                                                imageMessageEl.appendChild(imageMessageContent);
+                                                                                                                
+                                                                                                                // Adicionar a mensagem ao chat
+                                                                                                                chatMessages.appendChild(imageMessageEl);
+                                                                                                                
+                                                                                                                // Adicionar ao array displayedMessages 
+                                                                                                                const imageTime8 = getCurrentTime();
+                                                                                                                displayedMessages.push({
+                                                                                                                    type: 'image',
+                                                                                                                    content: 'assets/img-3.png',
+                                                                                                                    caption: null,
+                                                                                                                    time: imageTime8
+                                                                                                                });
+                                                                                                                // Removendo chamada ao saveChatData()
+                                                                                                                
+                                                                                                                chatMessages.scrollTop = chatMessages.scrollHeight;  
+                                                                                                              }, 2000);
+                                                                                                          }, 3000); 
+                                                                                                      }, 2000);
+                                                                                                    }, 3000); 
+                                                                                                  }, 2000);
+                                                                                              }, 3000); // 10 segundos após começar a reprodução do áudio
+
+                                                                                            }, 2000);
+                                                                                        }, 20000); // 10 segundos após começar a reprodução do áudio
                                                                                     }, 1000);
                                                                                 }, 2000);
                                                                             }, 2000);
                                                                         }, 2000);
-                                                                    }, 2000);
+                                                                    }, 5000);
                                                                 }, 2000);
-                                                            }, 23000); // 23 segundos para ouvir o segundo áudio (em vez de 24)
+                                                            }, 23000);
                                                         }, 1000);
                                                     }, 2000);
                                                 }, 2000);
@@ -2626,3 +2728,47 @@ function processFinalConfirmation(response) {
         }, 2000);
     }, 1000);
 }
+
+// Função para testar a inserção de uma mensagem de vídeo
+function insertVideoMessage(embedCode, caption) {
+  // Criar a mensagem de vídeo
+  const messageInfo = {
+    type: 'video',
+    embedCode: embedCode,
+    caption: caption || null,
+    delay: 1000
+  };
+  
+  // Mostrar indicador de digitação
+  showTypingIndicator();
+  
+  // Após um delay, inserir a mensagem
+  setTimeout(() => {
+    // Esconder o indicador de digitação
+    hideTypingIndicator();
+    
+    // Criar e mostrar a mensagem de vídeo
+    const currentTime = getCurrentTime();
+    const messageEl = createVideoMessage(messageInfo.embedCode, messageInfo.caption, currentTime);
+    
+    // Adicionar ao chat
+    chatMessages.appendChild(messageEl);
+    
+    // Adicionar ao array de mensagens exibidas
+    displayedMessages.push({
+      type: 'video',
+      embedCode: messageInfo.embedCode,
+      caption: messageInfo.caption,
+      time: currentTime
+    });
+    
+    // Rolar para baixo
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }, 2000);
+}
+
+// Exposição da função para teste via console
+window.sendVideoMessage = function(caption) {
+  const embedCode = `<div id="vid_6827db8b9578d96aefdefedc" style="position: relative; width: 100%; padding: 177.77777777777777% 0 0;"> <img id="thumb_6827db8b9578d96aefdefedc" src="https://images.converteai.net/bdd98c12-d2a7-41cd-8622-504d088bf64a/players/6827db8b9578d96aefdefedc/thumbnail.jpg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block;" alt="thumbnail"> <div id="backdrop_6827db8b9578d96aefdefedc" style=" -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); position: absolute; top: 0; height: 100%; width: 100%; "></div> </div> <script type="text/javascript" id="scr_6827db8b9578d96aefdefedc"> var s=document.createElement("script"); s.src="https://scripts.converteai.net/bdd98c12-d2a7-41cd-8622-504d088bf64a/players/6827db8b9578d96aefdefedc/player.js", s.async=!0,document.head.appendChild(s); </script>`;
+  insertVideoMessage(embedCode, caption || "Assista este vídeo importante");
+};
