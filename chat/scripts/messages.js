@@ -125,68 +125,6 @@ function createImageMessage(imageUrl, caption, customTime) {
   return messageEl;
 }
 
-// Function to create a video message element with Vturb player
-function createVideoMessage(embedCode, caption, customTime) {
-  const messageEl = document.createElement('div');
-  messageEl.className = 'message received';
-  
-  const messageContent = document.createElement('div');
-  messageContent.className = 'message-content';
-  
-  const videoContainer = document.createElement('div');
-  videoContainer.className = 'message-video-container';
-  
-  // Extrair o ID do player do código de embed 
-  const matches = embedCode.match(/vid_([a-zA-Z0-9]+)/);
-  const playerId = matches ? matches[1] : "6827db8b9578d96aefdefedc";
-  
-  // Criar o contêiner e a imagem thumbnail primeiro (parte HTML)
-  const containerHTML = `<div id="vid_${playerId}" style="position: relative; width: 100%; padding: 177.77777777777777% 0 0;">
-    <img id="thumb_${playerId}" src="https://images.converteai.net/bdd98c12-d2a7-41cd-8622-504d088bf64a/players/${playerId}/thumbnail.jpg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block;" alt="thumbnail">
-    <div id="backdrop_${playerId}" style=" -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); position: absolute; top: 0; height: 100%; width: 100%; "></div>
-  </div>`;
-  
-  // Inserir o HTML
-  videoContainer.innerHTML = containerHTML;
-  
-  messageContent.appendChild(videoContainer);
-  
-  // Criar e adicionar o script separadamente
-  setTimeout(() => {
-    const script = document.createElement('script');
-    script.id = `scr_${playerId}`;
-    script.src = `https://scripts.converteai.net/bdd98c12-d2a7-41cd-8622-504d088bf64a/players/${playerId}/player.js`;
-    script.async = true;
-    document.head.appendChild(script);
-  }, 500);
-  
-  if (caption) {
-    const captionText = document.createElement('div');
-    captionText.className = 'message-text';
-    captionText.textContent = caption;
-    messageContent.appendChild(captionText);
-  }
-  
-  const messageTimeContainer = document.createElement('div');
-  messageTimeContainer.className = 'message-time-container';
-  
-  const messageTime = document.createElement('span');
-  messageTime.className = 'message-time';
-  messageTime.textContent = customTime || getCurrentTime();
-  
-  // Criar o ícone de duplo check como um span vazio
-  const doubleCheck = document.createElement('span');
-  doubleCheck.className = 'double-check';
-  
-  messageTimeContainer.appendChild(messageTime);
-  messageTimeContainer.appendChild(doubleCheck);
-  
-  messageContent.appendChild(messageTimeContainer);
-  messageEl.appendChild(messageContent);
-  
-  return messageEl;
-}
-
 // Function to create an audio message element
 function createAudioMessage(duration, customTime, audioSrc = null) {
   const messageEl = document.createElement('div');

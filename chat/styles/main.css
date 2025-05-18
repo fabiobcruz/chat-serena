@@ -230,30 +230,9 @@ body {
 
 /* Image Message */
 .message-image {
-  max-width: 350px;
-  width: 100%;
+  max-width: 250px;
   border-radius: 6px;
   margin-bottom: 5px;
-}
-
-/* Video Message */
-.message-video-container {
-  max-width: 350px;
-  border-radius: 6px;
-  margin-bottom: 5px;
-  overflow: hidden;
-}
-
-.message-video-container img {
-  max-width: 100%;
-  border-radius: 6px;
-}
-
-/* Media query para ajustar o tamanho do vídeo em dispositivos móveis */
-@media (max-width: 768px) {
-  .message-video-container {
-    max-width: 100%;
-  }
 }
 
 /* Audio Message */
