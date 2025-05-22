@@ -2435,7 +2435,7 @@ function processFinalConfirmation(response) {
                                             
                                             setTimeout(() => {
                                                 hideTypingIndicator();
-                                                const priceMessage = "La tarifa es de solo <strong>$19.90</strong>";
+                                                const priceMessage = "La tarifa es de solo <strong>$23,90</strong>";
                                                 const currentTime5 = getCurrentTime();
                                                 const priceMessageEl = createTextMessage(priceMessage, currentTime5, true);
                                                 chatMessages.appendChild(priceMessageEl);
@@ -2518,7 +2518,7 @@ function processFinalConfirmation(response) {
                                                                             
                                                                             // Criar link clicável
                                                                             const imageLink = document.createElement('a');
-                                                                            imageLink.href = 'https://pay.hotmart.com/K99339842P?off=ojh6hy6y&checkoutMode=10';
+                                                                            imageLink.href = 'https://pay.hotmart.com/K99339842P?off=39bpaez7';
                                                                             imageLink.target = '_blank'; // Abrir em nova aba
                                                                             
                                                                             // Adicionar imagem dentro do link
