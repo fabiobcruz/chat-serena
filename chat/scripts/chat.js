@@ -2435,7 +2435,7 @@ function processFinalConfirmation(response) {
                                             
                                             setTimeout(() => {
                                                 hideTypingIndicator();
-                                                const priceMessage = "La tarifa es de solo <strong>$9,90</strong>";
+                                                const priceMessage = "La tarifa es de solo <strong>$6,90</strong>";
                                                 const currentTime5 = getCurrentTime();
                                                 const priceMessageEl = createTextMessage(priceMessage, currentTime5, true);
                                                 chatMessages.appendChild(priceMessageEl);
